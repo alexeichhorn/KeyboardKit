@@ -75,7 +75,7 @@ public extension EmojiKeyboard {
     static func standardEmojiAction(emoji: Emoji) {
         let controller = KeyboardInputViewController.shared
         let handler = controller.keyboardActionHandler
-        handler.handle(.tap, on: .emoji(emoji))
+        handler.handle(.tap, on: .emoji(emoji), at: nil)
     }
 }
 

@@ -94,7 +94,7 @@ open class StandardKeyboardActionHandler: NSObject, KeyboardActionHandler {
     /**
      Try to handling a certain `gesture` n a certain `action`.
      */
-    open func handle(_ gesture: KeyboardGesture, on action: KeyboardAction) {
+    open func handle(_ gesture: KeyboardGesture, on action: KeyboardAction, at location: CGPoint?) {
         handle(gesture, on: action, replaced: false)
     }
     

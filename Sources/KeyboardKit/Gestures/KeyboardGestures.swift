@@ -115,7 +115,7 @@ private extension KeyboardGestures {
     var doubleTapGesture: _EndedGesture<TapGesture>? {
         guard let action = doubleTapAction else { return nil }
         return TapGesture(count: 2)
-            .onEnded { action() }
+            .onEnded { action(nil) }
     }
 
     /**
@@ -124,7 +124,7 @@ private extension KeyboardGestures {
      */
     func dragGesture(for geo: GeometryProxy) -> some Gesture {
         DragGesture(minimumDistance: 0)
-            .onChanged { _ in handlePress(in: geo) }
+            .onChanged { handlePress(in: geo, at: $0.location) }
             .onEnded { handleRelease(in: geo, at: $0.location) }
     }
     
@@ -179,21 +179,23 @@ private extension KeyboardGestures {
     }
     
     func handleLongPressGesture() {
-        longPressAction?()
+        longPressAction?(nil)
         startRepeatTimer()
     }
     
-    func handlePress(in geo: GeometryProxy) {
+    func handlePress(in geo: GeometryProxy, at location: CGPoint) {
         if isPressed.wrappedValue { return }
         isPressed.wrappedValue = true
-        pressAction?()
+        let keyboardLocation = geo.frame(in: .named(InputCalloutContext.coordinateSpace)).origin + location
+        pressAction?(keyboardLocation)
         inputCalloutContext?.updateInput(for: action, in: geo)
     }
     
     func handleRelease(in geo: GeometryProxy, at location: CGPoint) {
-        releaseAction?()
+        let keyboardLocation = geo.frame(in: .named(InputCalloutContext.coordinateSpace)).origin + location
+        releaseAction?(keyboardLocation)
         if geo.contains(location), shouldApplyTapAction {
-            tapAction?()
+            tapAction?(keyboardLocation)
         }
         shouldApplyTapAction = true
         isPressed.wrappedValue = false
@@ -203,7 +205,7 @@ private extension KeyboardGestures {
     
     func startRepeatTimer() {
         guard let action = repeatAction else { return repeatTimer.stop() }
-        repeatTimer.start(action: action)
+        repeatTimer.start(action: { action(nil) })
     }
     
     func stopRepeatTimer() {
@@ -223,5 +225,15 @@ private extension GeometryProxy {
         guard x < size.width, y < size.height else { return false }
         return true
     }
+}
+
+// MARK: - CGPoint Extension
+
+private extension CGPoint {
+    
+    static func +(_ lhs: CGPoint, rhs: CGPoint) -> CGPoint {
+        CGPoint(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
+    }
+    
 }
 #endif

@@ -35,9 +35,9 @@ class DemoKeyboardActionHandler: StandardKeyboardActionHandler {
         }
     }
     
-    override func handle(_ gesture: KeyboardGesture, on action: KeyboardAction) {
+    override func handle(_ gesture: KeyboardGesture, on action: KeyboardAction, at location: CGPoint?) {
         // Customize the action handling if needed
-        super.handle(gesture, on: action)
+        super.handle(gesture, on: action, at: location)
     }
     
     

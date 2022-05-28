@@ -10,7 +10,7 @@ import SwiftUI
 
 public extension View {
     
-    typealias KeyboardGestureAction = () -> Void
+    typealias KeyboardGestureAction = (_ location: CGPoint?) -> Void
     typealias KeyboardDragGestureAction = (_ startLocation: CGPoint, _ location: CGPoint) -> Void
     
     /**
@@ -86,12 +86,12 @@ extension View {
         self.keyboardGestures(
             action: action,
             isPressed: isPressed,
-            tapAction: { actionHandler.handle(.tap, on: action) },
-            doubleTapAction: { actionHandler.handle(.doubleTap, on: action) },
-            longPressAction: { actionHandler.handle(.longPress, on: action) },
-            pressAction: { actionHandler.handle(.press, on: action) },
-            releaseAction: { actionHandler.handle(.release, on: action) },
-            repeatAction: { actionHandler.handle(.repeatPress, on: action) },
+            tapAction: { actionHandler.handle(.tap, on: action, at: $0) },
+            doubleTapAction: { actionHandler.handle(.doubleTap, on: action, at: $0) },
+            longPressAction: { actionHandler.handle(.longPress, on: action, at: $0) },
+            pressAction: { actionHandler.handle(.press, on: action, at: $0) },
+            releaseAction: { actionHandler.handle(.release, on: action, at: $0) },
+            repeatAction: { actionHandler.handle(.repeatPress, on: action, at: $0) },
             dragAction: { start, current in actionHandler.handleDrag(on: action, from: start, to: current) })
     }
 }
