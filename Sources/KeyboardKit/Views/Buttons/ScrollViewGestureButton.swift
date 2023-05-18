@@ -56,8 +56,8 @@ public struct ScrollViewGestureButton<Label: View>: View {
     init(
         isPressed: Binding<Bool>? = nil,
         pressAction: Action? = nil,
-        releaseInsideAction: Action? = nil,
-        releaseOutsideAction: Action? = nil,
+        releaseInsideAction: OptionalLocationAction? = nil,
+        releaseOutsideAction: LocationAction? = nil,
         longPressDelay: TimeInterval = GestureButtonDefaults.longPressDelay,
         longPressAction: Action? = nil,
         doubleTapTimeout: TimeInterval = GestureButtonDefaults.doubleTapTimeout,
@@ -74,8 +74,8 @@ public struct ScrollViewGestureButton<Label: View>: View {
         self._config = State(wrappedValue: GestureConfiguration(
             state: GestureState(),
             pressAction: pressAction ?? {},
-            releaseInsideAction: releaseInsideAction ?? {},
-            releaseOutsideAction: releaseOutsideAction ?? {},
+            releaseInsideAction: releaseInsideAction ?? { _ in },
+            releaseOutsideAction: releaseOutsideAction ?? { _ in },
             longPressDelay: longPressDelay,
             longPressAction: longPressAction ?? {},
             doubleTapTimeout: doubleTapTimeout,
@@ -91,6 +91,8 @@ public struct ScrollViewGestureButton<Label: View>: View {
     }
 
     public typealias Action = () -> Void
+    public typealias LocationAction = (CGPoint) -> Void
+    public typealias OptionalLocationAction = (CGPoint?) -> Void
     public typealias DragAction = (DragGesture.Value) -> Void
     public typealias LabelBuilder = (_ isPressed: Bool) -> Label
 
@@ -106,7 +108,7 @@ public struct ScrollViewGestureButton<Label: View>: View {
     private var isPressedByGesture = false
 
     public var body: some View {
-        Button(action: config.releaseInsideAction) {
+        Button(action: { config.releaseInsideAction(nil) }) {
             config.label(isPressed)
                 .withDragGestureActions(
                     for: self.config,
@@ -141,8 +143,8 @@ extension ScrollViewGestureButton {
     struct GestureConfiguration {
         let state: GestureState
         let pressAction: Action
-        let releaseInsideAction: Action
-        let releaseOutsideAction: Action
+        let releaseInsideAction: OptionalLocationAction
+        let releaseOutsideAction: LocationAction
         let longPressDelay: TimeInterval
         let longPressAction: Action
         let doubleTapTimeout: TimeInterval
@@ -239,7 +241,7 @@ private extension View {
                         let pressed = isPressed.wrappedValue
                         if !pressed { config.pressAction() }
                         toggleIsPressedForQuickTap(isPressed)
-                        config.releaseInsideAction()
+                        config.releaseInsideAction(nil)
                         config.tryTriggerDoubleTap()
                         if !pressed { config.endAction() }
                     }
@@ -262,9 +264,9 @@ private extension View {
                             isPressedByGesture.wrappedValue = false
                             config.tryStopRepeatTimer()
                             if geo.contains(value.location) {
-                                config.releaseInsideAction()
+                                config.releaseInsideAction(value.location)
                             } else {
-                                config.releaseOutsideAction()
+                                config.releaseOutsideAction(value.location)
                             }
                             config.endAction()
                         }
@@ -313,8 +315,8 @@ struct ScrollViewGestureButton_Previews: PreviewProvider {
                     ScrollViewGestureButton(
                         isPressed: $state.isPressed,
                         pressAction: { state.pressCount += 1 },
-                        releaseInsideAction: { state.releaseInsideCount += 1 },
-                        releaseOutsideAction: { state.releaseOutsideCount += 1 },
+                        releaseInsideAction: { _ in state.releaseInsideCount += 1 },
+                        releaseOutsideAction: { _ in state.releaseOutsideCount += 1 },
                         longPressDelay: 0.8,
                         longPressAction: { state.longPressCount += 1 },
                         doubleTapAction: { state.doubleTapCount += 1 },

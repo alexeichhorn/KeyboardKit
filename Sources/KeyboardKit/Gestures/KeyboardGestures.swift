@@ -120,8 +120,8 @@ private extension KeyboardGestures {
             ScrollViewGestureButton(
                 isPressed: isPressed,
                 pressAction: { handlePress(in: geo) },
-                releaseInsideAction: { handleReleaseInside(in: geo) },
-                releaseOutsideAction: { handleReleaseOutside(in: geo) },
+                releaseInsideAction: { handleReleaseInside(in: geo, at: $0) },
+                releaseOutsideAction: { handleReleaseOutside(in: geo, at: $0) },
                 longPressDelay: 0.5,
                 longPressAction: { handleLongPress(in: geo) },
                 doubleTapAction: { handleDoubleTap(in: geo) },
@@ -134,8 +134,8 @@ private extension KeyboardGestures {
             GestureButton(
                 isPressed: isPressed,
                 pressAction: { handlePress(in: geo) },
-                releaseInsideAction: { handleReleaseInside(in: geo) },
-                releaseOutsideAction: { handleReleaseOutside(in: geo) },
+                releaseInsideAction: { handleReleaseInside(in: geo, at: $0) },
+                releaseOutsideAction: { handleReleaseOutside(in: geo, at: $0) },
                 longPressDelay: 0.5,
                 longPressAction: { handleLongPress(in: geo) },
                 doubleTapAction: { handleDoubleTap(in: geo) },
@@ -170,7 +170,7 @@ private extension KeyboardGestures {
 private extension KeyboardGestures {
 
     func handleDoubleTap(in geo: GeometryProxy) {
-        doubleTapAction?()
+        doubleTapAction?(nil)
     }
 
     func handleDrag(in geo: GeometryProxy, value: DragGesture.Value) {
@@ -188,25 +188,26 @@ private extension KeyboardGestures {
     func handleLongPress(in geo: GeometryProxy) {
         shouldApplyReleaseAction = shouldApplyReleaseAction && action != .space
         tryBeginActionCallout(in: geo)
-        longPressAction?()
+        longPressAction?(nil)
     }
 
     func handlePress(in geo: GeometryProxy) {
-        pressAction?()
+        pressAction?(nil)
         inputCalloutContext?.updateInput(for: action, in: geo)
     }
 
-    func handleReleaseInside(in geo: GeometryProxy) {
+    func handleReleaseInside(in geo: GeometryProxy, at location: CGPoint?) {
         updateShouldApplyReleaseAction()
         guard shouldApplyReleaseAction else { return }
-        tapAction?()
-        releaseAction?()
+        let keyboardLocation = location.map { geo.frame(in: .named(InputCalloutContext.coordinateSpace)).origin + $0 }
+        tapAction?(keyboardLocation)
+        releaseAction?(keyboardLocation)
     }
 
-    func handleReleaseOutside(in geo: GeometryProxy) {}
+    func handleReleaseOutside(in geo: GeometryProxy, at location: CGPoint) {}
 
     func handleRepeat(in geo: GeometryProxy) {
-        repeatAction?()
+        repeatAction?(nil)
     }
 
     func tryBeginActionCallout(in geo: GeometryProxy) {
@@ -246,7 +247,7 @@ private extension KeyboardGestures {
      */
     func dragGesture(for geo: GeometryProxy) -> some Gesture {
         DragGesture(minimumDistance: 0)
-            .onChanged { _ in tryHandlePress(in: geo, at: $0.location) }
+            .onChanged { tryHandlePress(in: geo, at: $0.location) }
             .onEnded { handleLegacyRelease(in: geo, at: $0.location) }
     }
     
@@ -292,7 +293,7 @@ private extension KeyboardGestures {
     }
 
     func handleLegacyLongPressGesture() {
-        longPressAction?()
+        longPressAction?(nil)
         startRepeatTimer()
     }
     
