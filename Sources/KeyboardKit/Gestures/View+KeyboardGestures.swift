@@ -10,7 +10,7 @@ import SwiftUI
 
 public extension View {
     
-    typealias KeyboardGestureAction = () -> Void
+    typealias KeyboardGestureAction = (_ location: CGPoint?) -> Void
     typealias KeyboardDragGestureAction = (_ startLocation: CGPoint, _ location: CGPoint) -> Void
 
     /**

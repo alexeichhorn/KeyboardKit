@@ -237,7 +237,7 @@ private extension KeyboardGestures {
     var doubleTapGesture: _EndedGesture<TapGesture>? {
         guard let action = doubleTapAction else { return nil }
         return TapGesture(count: 2)
-            .onEnded { action() }
+            .onEnded { action(nil) }
     }
 
     /**
@@ -246,7 +246,7 @@ private extension KeyboardGestures {
      */
     func dragGesture(for geo: GeometryProxy) -> some Gesture {
         DragGesture(minimumDistance: 0)
-            .onChanged { _ in tryHandlePress(in: geo) }
+            .onChanged { _ in tryHandlePress(in: geo, at: $0.location) }
             .onEnded { handleLegacyRelease(in: geo, at: $0.location) }
     }
     
@@ -297,29 +297,31 @@ private extension KeyboardGestures {
     }
     
     func handleLegacyRelease(in geo: GeometryProxy, at location: CGPoint) {
+        let keyboardLocation = geo.frame(in: .named(InputCalloutContext.coordinateSpace)).origin + location
         if geo.contains(location), shouldApplyReleaseAction {
-            releaseAction?()
-            tapAction?()
+            releaseAction?(keyboardLocation)
+            tapAction?(keyboardLocation)
         }
         shouldApplyReleaseAction = true
         isPressGestureActive = false
         inputCalloutContext?.reset()
         stopRepeatTimer()
-    }
+    }        
     
     func startRepeatTimer() {
         guard let action = repeatAction else { return repeatTimer.stop() }
-        repeatTimer.start(action: action)
+        repeatTimer.start(action: { action(nil) })
     }
     
     func stopRepeatTimer() {
         repeatTimer.stop()
     }
 
-    func tryHandlePress(in geo: GeometryProxy) {
+    func tryHandlePress(in geo: GeometryProxy, at location: CGPoint) {
         if isPressGestureActive { return }
         isPressGestureActive = true
-        pressAction?()
+        let keyboardLocation = geo.frame(in: .named(InputCalloutContext.coordinateSpace)).origin + location
+        pressAction?(keyboardLocation)
         inputCalloutContext?.updateInput(for: action, in: geo)
     }
 }
@@ -336,5 +338,15 @@ private extension GeometryProxy {
         guard x < size.width, y < size.height else { return false }
         return true
     }
+}
+
+// MARK: - CGPoint Extension
+
+private extension CGPoint {
+    
+    static func +(_ lhs: CGPoint, rhs: CGPoint) -> CGPoint {
+        CGPoint(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
+    }
+    
 }
 #endif

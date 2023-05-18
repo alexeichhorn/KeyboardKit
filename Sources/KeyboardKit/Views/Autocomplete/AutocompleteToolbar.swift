@@ -219,7 +219,7 @@ public extension AutocompleteToolbar {
         let proxy = controller.textDocumentProxy
         let actionHandler = controller.keyboardActionHandler
         proxy.insertAutocompleteSuggestion(suggestion)
-        actionHandler.handle(.tap, on: .character(""))
+        actionHandler.handle(.tap, on: .character(""), at: nil)
     }
 }
 

@@ -47,7 +47,7 @@ public protocol KeyboardActionHandler: AnyObject {
     /**
      Handle a certain `gesture` on a certain `action`.
      */
-    func handle(_ gesture: KeyboardGesture, on action: KeyboardAction)
+    func handle(_ gesture: KeyboardGesture, on action: KeyboardAction, at location: CGPoint?)
     
     /**
      Handle a drag gesture on a certain action, from a start

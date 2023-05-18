@@ -141,7 +141,7 @@ open class ActionCalloutContext: ObservableObject {
      */
     open func handleSelectedAction() {
         guard let action = selectedAction else { return }
-        actionHandler.handle(.tap, on: action)
+        actionHandler.handle(.tap, on: action, at: nil)
     }
     
     /**
