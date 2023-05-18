@@ -3,7 +3,7 @@
 //  KeyboardKit
 //
 //  Created by Daniel Saidi on 2019-05-28.
-//  Copyright © 2021 Daniel Saidi. All rights reserved.
+//  Copyright © 2021-2023 Daniel Saidi. All rights reserved.
 //
 
 #if os(iOS) || os(tvOS)
@@ -15,6 +15,7 @@ class MockKeyboardInputViewController: KeyboardInputViewController, Mockable {
     
     lazy var dismissKeyboardRef = MockReference(dismissKeyboard)
     lazy var performAutocompleteRef = MockReference(performAutocomplete)
+    lazy var performTextContextSyncRef = MockReference(performTextContextSync)
     
     let mock = Mock()
     
@@ -28,6 +29,10 @@ class MockKeyboardInputViewController: KeyboardInputViewController, Mockable {
     
     override func performAutocomplete() {
         call(performAutocompleteRef, args: ())
+    }
+
+    override func performTextContextSync() {
+        call(performTextContextSyncRef, args: ())
     }
 }
 #endif

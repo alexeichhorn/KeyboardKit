@@ -10,11 +10,21 @@
 
 "done" = "OK";
 "go" = "Acces";
+"join" = "join";
+"next" = "next";
 "ok" = "OK";
 "return" = "↵";
 "search" = "Căutare";
+"send" = "send";
 "space" = "Spațiu";
 
 "keyboardTypeAlphabetic" = "ABC";
 "keyboardTypeNumeric" = "123";
 "keyboardTypeSymbolic" = "#+=";
+
+"searchEmoji" = "";
+
+/**
+ For emojis localization, copy the text in `Emojis.md`, then
+ replace this comment with it and translate the keys.
+ */

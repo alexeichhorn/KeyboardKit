@@ -3,7 +3,7 @@
 //  KeyboardKit
 //
 //  Created by Daniel Saidi on 2019-10-15.
-//  Copyright © 2021 Daniel Saidi. All rights reserved.
+//  Copyright © 2019-2023 Daniel Saidi. All rights reserved.
 //
 
 import Foundation
@@ -17,16 +17,17 @@ public struct AudioFeedbackConfiguration: Codable, Equatable {
      Create a feedback configuration.
      
      - Parameters:
-       - input: The feedback to use for input keys.
-       - delete: The feedback to use for delete keys.
-       - system: The feedback to use for system keys.
-       - actions: A list of action-specific feedback.
+       - input: The feedback to use for input keys, by default `.input`.
+       - delete: The feedback to use for delete keys, by default `.delete`.
+       - system: The feedback to use for system keys, by default `.system`.
+       - actions: A list of action-specific feedback, by default `empty`.
      */
     public init(
-        input: SystemAudio = .input,
-        delete: SystemAudio = .delete,
-        system: SystemAudio = .system,
-        actions: [ActionFeedback] = []) {
+        input: AudioFeedback = .input,
+        delete: AudioFeedback = .delete,
+        system: AudioFeedback = .system,
+        actions: [ActionFeedback] = []
+    ) {
         self.input = input
         self.delete = delete
         self.system = system
@@ -40,32 +41,33 @@ public struct AudioFeedbackConfiguration: Codable, Equatable {
         
         public init(
             action: KeyboardAction,
-            feedback: SystemAudio) {
+            feedback: AudioFeedback
+        ) {
             self.action = action
             self.feedback = feedback
         }
         
         public let action: KeyboardAction
-        public let feedback: SystemAudio
+        public let feedback: AudioFeedback
     }
     
     /**
-     The audio to play when a delete key is pressed.
+     The audio to trigger when a delete key is pressed.
      */
-     public var delete: SystemAudio
+     public var delete: AudioFeedback
  
     /**
-     The audio to play when an input key is pressed.
+     The audio to trigger when an input key is pressed.
      */
-    public var input: SystemAudio
+    public var input: AudioFeedback
     
    /**
-    The audio to play when a system key is pressed.
+    The audio to trigger when a system key is pressed.
     */
-    public var system: SystemAudio
+    public var system: AudioFeedback
     
     /**
-     The audio to play when an action is triggered.
+     The audio to trigger when an action is triggered.
      */
      public var actions: [ActionFeedback]
 }

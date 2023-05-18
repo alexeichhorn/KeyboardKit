@@ -10,11 +10,21 @@
 
 "done" = "tapos na";
 "go" = "pumunta";
+"join" = "join";
+"next" = "next";
 "ok" = "OK";
 "return" = "susunod";
 "search" = "hanapin";
+"send" = "send";
 "space" = "space";
 
 "keyboardTypeAlphabetic" = "ABC";
 "keyboardTypeNumeric" = "123";
 "keyboardTypeSymbolic" = "#+=";
+
+"searchEmoji" = "";
+
+/**
+ For emojis localization, copy the text in `Emojis.md`, then
+ replace this comment with it and translate the keys.
+ */

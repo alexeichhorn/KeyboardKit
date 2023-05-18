@@ -3,7 +3,7 @@
 //  KeyboardKit
 //
 //  Created by Daniel Saidi on 2019-10-15.
-//  Copyright © 2021 Daniel Saidi. All rights reserved.
+//  Copyright © 2019-2023 Daniel Saidi. All rights reserved.
 //
 
 import Foundation
@@ -14,9 +14,6 @@ import Foundation
  */
 public enum KeyboardGesture: String, CaseIterable, Codable, Equatable, Identifiable {
 
-    /// Occurs when a button is pressed then released inside.
-    case tap
-    
     /// Occurs when a button is double tapped.
     case doubleTap
     

@@ -3,19 +3,19 @@
 //  KeyboardKit
 //
 //  Created by Daniel Saidi on 2021-02-02.
-//  Copyright © 2021 Daniel Saidi. All rights reserved.
+//  Copyright © 2021-2023 Daniel Saidi. All rights reserved.
 //
 
 import CoreGraphics
 import SwiftUI
 
 /**
- This class can be inherited by any keyboard layout provider
- that needs basic functionality for creating system keyboard
- layouts that depend on system-specific rules.
- 
- This class will use an `InputSetProvider` and use the input
- set it returns to create a keyboard layout.
+ This is a base class for any keyboard layout providers that
+ need basic functionality for system keyboard layouts.
+
+ The class is used by the ``iPadKeyboardLayoutProvider`` and
+ and the ``iPhoneKeyboardLayoutProvider``, since they aim to
+ create platforms-specific system keyboard layouts.
  
  Since keyboard extensions don't support `dictation` without
  having to jump through hoops (see SwiftKey) the initializer
@@ -32,20 +32,10 @@ open class SystemKeyboardLayoutProvider: KeyboardLayoutProvider {
      
      - Parameters:
        - inputSetProvider: The input set provider to use.
-       - dictationReplacement: An optional dictation replacement action.
      */
-    public init(
-        inputSetProvider: InputSetProvider,
-        dictationReplacement: KeyboardAction? = nil) {
+    public init(inputSetProvider: InputSetProvider) {
         self.inputSetProvider = inputSetProvider
-        self.dictationReplacement = dictationReplacement
     }
-
-    
-    /**
-     An optional dictation replacement action.
-     */
-    public let dictationReplacement: KeyboardAction?
     
     /**
      The input set provider to use.
@@ -62,10 +52,9 @@ open class SystemKeyboardLayoutProvider: KeyboardLayoutProvider {
         let items = self.items(for: actions, context: context)
         return KeyboardLayout(itemRows: items)
     }
-    
+
     /**
-     Register a new input set provider. This will affect the
-     keyboard layout that is provided by this class.
+     Register a new input set provider.
      */
     open func register(inputSetProvider: InputSetProvider) {
         self.inputSetProvider = inputSetProvider
@@ -131,7 +120,10 @@ open class SystemKeyboardLayoutProvider: KeyboardLayoutProvider {
      */
     open func itemInsets(for action: KeyboardAction, row: Int, index: Int, context: KeyboardContext) -> EdgeInsets {
         let config = KeyboardLayoutConfiguration.standard(for: context)
-        return config.buttonInsets
+        switch action {
+        case .characterMargin, .none: return EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
+        default: return config.buttonInsets
+        }
     }
     
     /**
@@ -166,16 +158,11 @@ open class SystemKeyboardLayoutProvider: KeyboardLayoutProvider {
      */
     open func keyboardReturnAction(for context: KeyboardContext) -> KeyboardAction {
         #if os(iOS) || os(tvOS)
-        let type = context.textDocumentProxy.returnKeyType
-        switch type {
-        case .done: return .primary(.done)
-        case .go: return .primary(.go)
-        case .search: return .primary(.search)
-        default: return .return
-        }
-        #else
-        return .return
+        let proxy = context.textDocumentProxy
+        let returnType = proxy.returnKeyType?.keyboardReturnKeyType
+        if let returnType { return .primary(returnType) }
         #endif
+        return .primary(.return)
     }
     
     /**
@@ -184,7 +171,7 @@ open class SystemKeyboardLayoutProvider: KeyboardLayoutProvider {
      */
     open func keyboardSwitchActionForBottomInputRow(for context: KeyboardContext) -> KeyboardAction? {
         switch context.keyboardType {
-        case .alphabetic(let state): return .shift(currentState: state)
+        case .alphabetic(let casing): return .shift(currentCasing: casing)
         case .numeric: return .keyboardType(.symbolic)
         case .symbolic: return .keyboardType(.numeric)
         default: return nil

@@ -3,11 +3,9 @@
 //  KeyboardKit
 //
 //  Created by Daniel Saidi on 2019-05-11.
-//  Copyright © 2021 Daniel Saidi. All rights reserved.
+//  Copyright © 2019-2023 Daniel Saidi. All rights reserved.
 //
 
-import Quick
-import Nimble
 import KeyboardKit
 
 extension KeyboardAction {
@@ -41,7 +39,6 @@ extension KeyboardAction {
             
             .moveCursorBackward,
             .moveCursorForward,
-            .newLine,
             .nextKeyboard,
             .nextLocale,
             .option,
@@ -50,11 +47,11 @@ extension KeyboardAction {
             .primary(.newLine),
             .primary(.ok),
             .primary(.search),
-            .return,
+            .primary(.return),
             
-            .shift(currentState: .lowercased),
-            .shift(currentState: .uppercased),
-            .shift(currentState: .capsLocked),
+            .shift(currentCasing: .lowercased),
+            .shift(currentCasing: .uppercased),
+            .shift(currentCasing: .capsLocked),
             
             .space,
             .systemImage(description: "", keyboardImageName: "", imageName: ""),

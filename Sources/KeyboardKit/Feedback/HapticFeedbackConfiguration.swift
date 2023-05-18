@@ -3,7 +3,7 @@
 //  KeyboardKit
 //
 //  Created by Daniel Saidi on 2019-10-15.
-//  Copyright © 2021 Daniel Saidi. All rights reserved.
+//  Copyright © 2019-2023 Daniel Saidi. All rights reserved.
 //
 
 import Foundation
@@ -17,12 +17,12 @@ public struct HapticFeedbackConfiguration: Codable, Equatable {
      Create a feedback configuration.
      
      - Parameters:
-       - tap: The feedback to use for taps.
-       - doubleTap: The feedback to use for double taps.
-       - longPress: The feedback to use for long presses.
-       - longPressOnSpace: The feedback to use for long presses on space.
-       - repeat: The feedback to use for repeat.
-       - actions: A list of action/gesture-specific feedback.
+       - tap: The feedback to use for taps, by default `.none`.
+       - doubleTap: The feedback to use for double taps, by default `.none`.
+       - longPress: The feedback to use for long presses, by default `.none`.
+       - longPressOnSpace: The feedback to use for long presses on space, by default `.mediumImpact`.
+       - repeat: The feedback to use for repeat, by default `.none`.
+       - actions: A list of action/gesture-specific feedback, by default `empty`.
      */
     public init(
         tap: HapticFeedback = .none,
@@ -30,7 +30,8 @@ public struct HapticFeedbackConfiguration: Codable, Equatable {
         longPress: HapticFeedback = .none,
         longPressOnSpace: HapticFeedback = .mediumImpact,
         repeat: HapticFeedback = .none,
-        actions: [ActionFeedback] = []) {
+        actions: [ActionFeedback] = []
+    ) {
         self.tap = tap
         self.doubleTap = doubleTap
         self.longPress = longPress
@@ -47,7 +48,8 @@ public struct HapticFeedbackConfiguration: Codable, Equatable {
         public init(
             action: KeyboardAction,
             gesture: KeyboardGesture,
-            feedback: HapticFeedback) {
+            feedback: HapticFeedback
+        ) {
             self.action = action
             self.gesture = gesture
             self.feedback = feedback

@@ -3,7 +3,7 @@
 //  KeyboardKit
 //
 //  Created by Daniel Saidi on 2021-03-18.
-//  Copyright © 2021 Daniel Saidi. All rights reserved.
+//  Copyright © 2021-2023 Daniel Saidi. All rights reserved.
 //
 
 import Foundation
@@ -17,8 +17,7 @@ public extension KeyboardAction {
     var shouldApplyAutocompleteSuggestion: Bool {
         switch self {
         case .character(let char): return char.isWordDelimiter
-        case .newLine: return true
-        case .return: return true
+        case .primary(let type): return type.isSystemAction
         case .space: return true
         default: return false
         }

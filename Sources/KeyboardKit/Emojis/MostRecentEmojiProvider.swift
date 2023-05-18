@@ -3,7 +3,7 @@
 //  KeyboardKit
 //
 //  Created by Daniel Saidi on 2021-01-16.
-//  Copyright © 2021 Daniel Saidi. All rights reserved.
+//  Copyright © 2021-2023 Daniel Saidi. All rights reserved.
 //
 
 import Foundation
@@ -27,7 +27,8 @@ public class MostRecentEmojiProvider: FrequentEmojiProvider {
      */
     public init(
         maxCount: Int = 30,
-        defaults: UserDefaults = .standard) {
+        defaults: UserDefaults = .standard
+    ) {
         self.maxCount = maxCount
         self.defaults = defaults
     }

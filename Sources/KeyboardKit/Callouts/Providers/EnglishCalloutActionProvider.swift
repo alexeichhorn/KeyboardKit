@@ -3,7 +3,7 @@
 //  KeyboardKit
 //
 //  Created by Daniel Saidi on 2021-02-01.
-//  Copyright © 2021 Daniel Saidi. All rights reserved.
+//  Copyright © 2021-2023 Daniel Saidi. All rights reserved.
 //
 
 import Foundation
@@ -18,8 +18,11 @@ import Foundation
  Check out the demo app to see them in action.
  */
 open class EnglishCalloutActionProvider: BaseCalloutActionProvider, LocalizedService {
-    
-    public let localeKey: String = KeyboardLocale.english.id
+
+    /**
+     The locale key that the provider is bound to.
+     */
+    public let localeKey = KeyboardLocale.english.id
     
     /**
      Get callout actions as a string for the provided `char`.

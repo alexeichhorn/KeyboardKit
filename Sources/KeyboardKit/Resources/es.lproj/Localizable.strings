@@ -10,11 +10,21 @@
 
 "done" = "aceptar";
 "go" = "ir";
+"join" = "join";
+"next" = "next";
 "ok" = "OK";
 "return" = "intro";
 "search" = "buscar";
+"send" = "send";
 "space" = "espacio";
 
 "keyboardTypeAlphabetic" = "ABC";
 "keyboardTypeNumeric" = "123";
 "keyboardTypeSymbolic" = "#+=";
+
+"searchEmoji" = "";
+
+/**
+ For emojis localization, copy the text in `Emojis.md`, then
+ replace this comment with it and translate the keys.
+ */

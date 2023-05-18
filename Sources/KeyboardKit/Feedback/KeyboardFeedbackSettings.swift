@@ -3,9 +3,10 @@
 //  KeyboardKit
 //
 //  Created by Daniel Saidi on 2021-04-01.
-//  Copyright © 2021 Daniel Saidi. All rights reserved.
+//  Copyright © 2021-2023 Daniel Saidi. All rights reserved.
 //
 
+import Combine
 import Foundation
 
 /**
@@ -34,7 +35,8 @@ public class KeyboardFeedbackSettings: ObservableObject {
      */
     public init(
         audioConfiguration: AudioFeedbackConfiguration = .standard,
-        hapticConfiguration: HapticFeedbackConfiguration = .standard) {
+        hapticConfiguration: HapticFeedbackConfiguration = .standard
+    ) {
         self.audioConfiguration = audioConfiguration
         self.hapticConfiguration = hapticConfiguration
     }
@@ -42,12 +44,14 @@ public class KeyboardFeedbackSettings: ObservableObject {
     /**
      The configuration to use for audio feedback.
      */
-    @Published public var audioConfiguration: AudioFeedbackConfiguration
+    @Published
+    public var audioConfiguration: AudioFeedbackConfiguration
     
     /**
      The configuration to use for haptic feedback.
      */
-    @Published public var hapticConfiguration: HapticFeedbackConfiguration
+    @Published
+    public var hapticConfiguration: HapticFeedbackConfiguration
 }
 
 public extension KeyboardFeedbackSettings {
@@ -120,13 +124,21 @@ public extension KeyboardFeedbackSettings {
      Toggle audio feedback between enabled and disabled.
      */
     func toggleAudioFeedback() {
-        isAudioFeedbackEnabled ? disableAudioFeedback() : enableAudioFeedback()
+        if isAudioFeedbackEnabled {
+            disableAudioFeedback()
+        } else {
+            enableAudioFeedback()
+        }
     }
 
     /**
      Toggle haptic feedback between enabled and disabled.
      */
     func toggleHapticFeedback() {
-        isHapticFeedbackEnabled ? disableHapticFeedback() : enableHapticFeedback()
+        if isHapticFeedbackEnabled {
+            disableHapticFeedback()
+        } else {
+            enableHapticFeedback()
+        }
     }
 }

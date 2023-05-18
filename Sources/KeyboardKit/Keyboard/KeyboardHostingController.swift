@@ -3,7 +3,7 @@
 //  KeyboardKit
 //
 //  Created by Daniel Saidi on 2020-03-13.
-//  Copyright © 2021 Daniel Saidi. All rights reserved.
+//  Copyright © 2020-2023 Daniel Saidi. All rights reserved.
 //
 
 #if os(iOS) || os(tvOS)
@@ -35,6 +35,11 @@ public class KeyboardHostingController<Content: View>: UIHostingController<Conte
         view.trailingAnchor.constraint(equalTo: controller.view.trailingAnchor).isActive = true
         view.topAnchor.constraint(equalTo: controller.view.topAnchor).isActive = true
         view.bottomAnchor.constraint(equalTo: controller.view.bottomAnchor).isActive = true
+    }
+
+    deinit {
+        removeFromParent()
+        view.removeFromSuperview()
     }
     
     public override func viewWillLayoutSubviews() {

@@ -3,23 +3,18 @@
 //  KeyboardKit
 //
 //  Created by Daniel Saidi on 2021-01-06.
-//  Copyright © 2021 Daniel Saidi. All rights reserved.
+//  Copyright © 2021-2023 Daniel Saidi. All rights reserved.
 //
 
+import Combine
 import SwiftUI
 
 /**
  This context can be used to handle callouts that show a set
- of alternate actions for a certain keyboard action.
- 
- The context will automatically dismiss itself when the user
- ends the callout gesture or drags too far down.
+ of secondary actions for various keyboard actions.
   
  You can inherit this class and override any open properties
  and functions to customize the standard behavior.
- 
- KeyboardKit automatically creates an instance of this class
- and binds it to the ``KeyboardInputViewController``.
  */
 open class ActionCalloutContext: ObservableObject {
     
@@ -27,7 +22,7 @@ open class ActionCalloutContext: ObservableObject {
     // MARK: - Initialization
     
     /**
-     Create a new context instance,
+     Create a new action callout context instance.
      
      - Parameters:
        - actionHandler: The action handler to use when tapping buttons.
@@ -35,7 +30,8 @@ open class ActionCalloutContext: ObservableObject {
      */
     public init(
         actionHandler: KeyboardActionHandler,
-        actionProvider: CalloutActionProvider) {
+        actionProvider: CalloutActionProvider
+    ) {
         self.actionHandler = actionHandler
         self.actionProvider = actionProvider
     }
@@ -43,23 +39,11 @@ open class ActionCalloutContext: ObservableObject {
     
     // MARK: - Dependencies
     
+    /// The action handler to use when tapping buttons.
     public let actionHandler: KeyboardActionHandler
+
+    /// The action provider to use for resolving callout actions.
     public let actionProvider: CalloutActionProvider
-    
-    
-    // MARK: - Shared
-    
-    /**
-     The shared context is resolved by returning the context
-     of ``KeyboardInputViewController/shared``.
-     */
-    static var shared: ActionCalloutContext? {
-        #if os(iOS)
-        KeyboardInputViewController.shared.actionCalloutContext
-        #else
-        nil
-        #endif
-    }
     
     
     // MARK: - Properties
@@ -100,22 +84,26 @@ open class ActionCalloutContext: ObservableObject {
     /**
      The action that are currently active for the context.
      */
-    @Published public private(set) var actions: [KeyboardAction] = []
+    @Published
+    public private(set) var actions: [KeyboardAction] = []
     
     /**
      The callout bubble alignment.
      */
-    @Published public private(set) var alignment: HorizontalAlignment = .leading
+    @Published
+    public private(set) var alignment: HorizontalAlignment = .leading
     
     /**
      The frame of the currently pressed keyboard button.
      */
-    @Published public private(set) var buttonFrame: CGRect = .zero
+    @Published
+    public private(set) var buttonFrame: CGRect = .zero
     
     /**
      The currently selected action index.
      */
-    @Published public private(set) var selectedIndex: Int = -1
+    @Published
+    public private(set) var selectedIndex: Int = -1
 
 
     // MARK: - Functions
@@ -135,7 +123,7 @@ open class ActionCalloutContext: ObservableObject {
      */
     open func handleSelectedAction() {
         guard let action = selectedAction else { return }
-        actionHandler.handle(.tap, on: action)
+        actionHandler.handle(.release, on: action)
     }
     
     /**
@@ -169,19 +157,17 @@ open class ActionCalloutContext: ObservableObject {
         guard isActive else { return }
         triggerHapticFeedbackForSelectionChange()
     }
-    
-    
-    #if os(iOS) || os(macOS) || os(watchOS)
+
     /**
      Update the selected input action when a drag gesture is
      changed by a drag gesture.
      */
-    open func updateSelection(with dragValue: DragGesture.Value?) {
-        guard let value = dragValue, buttonFrame != .zero else { return }
+    open func updateSelection(with dragTranslation: CGSize?) {
+        guard let value = dragTranslation, buttonFrame != .zero else { return }
         if shouldReset(for: value) { return reset() }
-        guard shouldUpdateSelection(with: value) else { return }
-        let translation = value.translation.width
-        let standardStyle = ActionCalloutStyle.standard
+        guard shouldUpdateSelection(for: value) else { return }
+        let translation = value.width
+        let standardStyle = KeyboardActionCalloutStyle.standard
         let maxButtonSize = standardStyle.maxButtonSize
         let buttonSize = buttonFrame.size.limited(to: maxButtonSize)
         let indexWidth = 0.9 * buttonSize.width
@@ -192,7 +178,6 @@ open class ActionCalloutContext: ObservableObject {
         if currentIndex != newIndex { triggerHapticFeedbackForSelectionChange() }
         self.selectedIndex = newIndex
     }
-    #endif
 }
 
 
@@ -229,16 +214,14 @@ private extension ActionCalloutContext {
         return .leading
         #endif
     }
-    
-    #if os(iOS) || os(macOS) || os(watchOS)
-    func shouldReset(for dragValue: DragGesture.Value) -> Bool {
-        dragValue.translation.height > buttonFrame.height
+
+    func shouldReset(for dragTranslation: CGSize) -> Bool {
+        dragTranslation.height > buttonFrame.height
     }
     
-    func shouldUpdateSelection(with dragValue: DragGesture.Value) -> Bool {
-        let translation = dragValue.translation.width
+    func shouldUpdateSelection(for dragTranslation: CGSize) -> Bool {
+        let translation = dragTranslation.width
         if translation == 0 { return true }
         return isLeading ? translation > 0 : translation < 0
     }
-    #endif
 }

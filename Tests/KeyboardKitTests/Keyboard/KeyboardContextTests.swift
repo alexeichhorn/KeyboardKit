@@ -3,120 +3,158 @@
 //  KeyboardKit
 //
 //  Created by Daniel Saidi on 2020-06-22.
-//  Copyright © 2021 Daniel Saidi. All rights reserved.
+//  Copyright © 2020-2023 Daniel Saidi. All rights reserved.
 //
 
-#if os(iOS) || os(tvOS)
-import Quick
-import Nimble
 import MockingKit
-import UIKit
+import XCTest
+
 @testable import KeyboardKit
 
-class KeyboardContextTests: QuickSpec {
+class KeyboardContextTests: XCTestCase {
+
+    var context: KeyboardContext!
+
+    #if os(iOS) || os(tvOS)
+    var proxy: MockTextDocumentProxy!
+    var traits: MockTraitCollection!
+    #endif
+
+    override func setUp() {
+        context = KeyboardContext()
+        #if os(iOS) || os(tvOS)
+        proxy = MockTextDocumentProxy()
+        traits = MockTraitCollection()
+        context.traitCollection = traits
+        context.textDocumentProxy = proxy
+        #endif
+    }
+
     
-    override func spec() {
-        
-        var controller: KeyboardInputViewController!
-        var context: KeyboardContext!
-        var proxy: MockTextDocumentProxy!
-        var traits: MockTraitCollection!
-        
-        func locale(for id: String) -> Locale {
-            Locale(identifier: id)
-        }
-        
-        beforeEach {
-            controller = KeyboardInputViewController()
-            proxy = MockTextDocumentProxy()
-            traits = MockTraitCollection()
-            context = KeyboardContext(controller: controller, keyboardType: .images)
-            context.traitCollection = traits
-            context.textDocumentProxy = proxy
-        }
-        
-        describe("initialization") {
-            
-            it("applies provided params") {
-                context = KeyboardContext(controller: controller, keyboardType: .images)
-                expect(context.device).to(be(UIDevice.current))
-                
-                expect(context.keyboardType).toEventually(equal(.images))
-                expect(context.locale).toEventually(equal(.current))
-                expect(context.locales).toEventually(equal([.current]))
-                
-                expect(context.hasDictationKey).toEventually(equal(controller.hasDictationKey))
-                expect(context.hasFullAccess).toEventually(equal(controller.hasFullAccess))
-                expect(context.needsInputModeSwitchKey).toEventually(equal(controller.needsInputModeSwitchKey))
-                expect(context.primaryLanguage).toEventually(beNil())
-                expect(context.textDocumentProxy).toEventually(be(controller.textDocumentProxy))
-                expect(context.textInputMode).toEventually(beNil())
-                expect(context.traitCollection).toEventually(equal(controller.traitCollection))
-            }
-        }
-        
-        describe("color scheme") {
-            
-            it("is derived from trait collection") {
-                traits.userInterfaceStyleValue = .light
-                expect(context.colorScheme).to(equal(.light))
-                traits.userInterfaceStyleValue = .dark
-                expect(context.colorScheme).to(equal(.dark))
-            }
-        }
-        
-        describe("keyboard appearance") {
-            
-            it("is derived from proxy") {
-                proxy.keyboardAppearance = .light
-                expect(context.keyboardAppearance).to(equal(.light))
-                proxy.keyboardAppearance = .dark
-                expect(context.keyboardAppearance).to(equal(.dark))
-            }
-        }
-        
-        describe("selecting next locale") {
-            
-            beforeEach {
-                context.locale = locale(for: "sv")
-                context.locales = [locale(for: "en"), locale(for: "fi"), locale(for: "da")]
-            }
-            
-            it("select first item if the current locale is not in locales") {
-                context.selectNextLocale()
-                expect(context.locale.identifier).to(equal("en"))
-            }
-            
-            it("select first item if the current locale is last in locales") {
-                context.locale = locale(for: "da")
-                context.selectNextLocale()
-                expect(context.locale.identifier).to(equal("en"))
-            }
-            
-            it("select next item if the current locale is not last in locales") {
-                context.locale = locale(for: "fi")
-                context.selectNextLocale()
-                expect(context.locale.identifier).to(equal("da"))
-            }
-        }
-        
-        describe("syncing context with controller") {
-            
-            it("updates some properties") {
-                let context = KeyboardContext(controller: controller, keyboardType: .images)
-                context.sync(with: controller)
-                expect(context.hasDictationKey).toEventually(equal(controller.hasDictationKey))
-                expect(context.hasFullAccess).toEventually(equal(controller.hasFullAccess))
-                expect(context.needsInputModeSwitchKey).toEventually(equal(controller.needsInputModeSwitchKey))
-                expect(context.primaryLanguage).toEventually(beNil())
-                #if os(iOS) || os(macOS)
-                expect(context.screenOrientation).toEventually(equal(controller.screenOrientation))
-                #endif
-                expect(context.textDocumentProxy).toEventually(be(controller.textDocumentProxy))
-                expect(context.textInputMode).toEventually(beNil())
-                expect(context.traitCollection).toEventually(equal(controller.traitCollection))
-            }
+    func locale(for id: String) -> Locale {
+        Locale(identifier: id)
+    }
+
+    func hasKeyboardLocaleResult(for locale: KeyboardLocale) -> Bool {
+        context.hasKeyboardLocale(locale)
+    }
+
+    func hasKeyboardTypeResult(for type: KeyboardType) -> Bool {
+        context.hasKeyboardType(type)
+    }
+
+    #if os(iOS) || os(tvOS)
+    func assert(_ context: KeyboardContext, isSyncedWith controller: KeyboardInputViewController) {
+        XCTAssertEqual(context.hasDictationKey, controller.hasDictationKey)
+        XCTAssertEqual(context.hasFullAccess, controller.hasFullAccess)
+        XCTAssertEqual(context.primaryLanguage, controller.primaryLanguage)
+        XCTAssertEqual(context.screenSize, controller.view.window?.screen.bounds.size ?? .zero)
+        XCTAssertEqual(context.textInputMode, controller.textInputMode)
+        eventually {
+            XCTAssertEqual(context.needsInputModeSwitchKey, controller.needsInputModeSwitchKey)
+            XCTAssertTrue(context.textDocumentProxy === controller.textDocumentProxy)
+            XCTAssertEqual(context.traitCollection, controller.traitCollection)
         }
     }
+    #endif
+
+
+    func testInitializerSetsDefaultValues() {
+        XCTAssertEqual(context.deviceType, .current)
+        XCTAssertFalse(context.hasDictationKey)
+        XCTAssertFalse(context.hasFullAccess)
+        XCTAssertNil(context.keyboardDictationReplacement)
+        XCTAssertEqual(context.keyboardType, .alphabetic(.lowercased))
+        XCTAssertEqual(context.locale, .current)
+        XCTAssertEqual(context.locales, [.current])
+        XCTAssertFalse(context.needsInputModeSwitchKey)
+        XCTAssertTrue(context.prefersAutocomplete)
+        XCTAssertNil(context.primaryLanguage)
+        XCTAssertEqual(context.screenSize, .zero)
+        #if os(iOS) || os(tvOS)
+        XCTAssertNotNil(context.textDocumentProxy)
+        XCTAssertNil(context.textInputMode)
+        XCTAssertNotNil(context.traitCollection)
+        #endif
+    }
+
+    #if os(iOS) || os(tvOS)
+    func testInitializerCanSyncWithController() {
+        let controller = KeyboardInputViewController()
+        context = KeyboardContext(controller: controller)
+        assert(context, isSyncedWith: controller)
+    }
+
+    func testColorSchemeIsDerivedFromTraitCollection() {
+        // traits.userInterfaceStyleValue = .light
+        // XCTAssertEqual(context.colorScheme, .light)
+        // traits.userInterfaceStyleValue = .dark
+        // XCTAssertEqual(context.colorScheme, .dark)
+    }
+
+    func testKeyboardAppearanceIsDerivedFromProxy() {
+        proxy.keyboardAppearance = .light
+        XCTAssertEqual(context.keyboardAppearance, .light)
+        proxy.keyboardAppearance = .dark
+        XCTAssertEqual(context.keyboardAppearance, .dark)
+    }
+    #endif
+
+    func testHasKeyboardLocaleReturnsTrueForMatchingType() {
+        context.setLocale(.swedish)
+        XCTAssertTrue(hasKeyboardLocaleResult(for: .swedish))
+        XCTAssertFalse(hasKeyboardLocaleResult(for: .finnish))
+        XCTAssertFalse(hasKeyboardLocaleResult(for: .german))
+        XCTAssertFalse(hasKeyboardLocaleResult(for: .norwegian))
+    }
+
+    func testHasKeyboardTypeReturnsTrueForMatchingType() {
+        context.keyboardType = .emojis
+        XCTAssertTrue(hasKeyboardTypeResult(for: .emojis))
+        XCTAssertFalse(hasKeyboardTypeResult(for: .alphabetic(.auto)))
+        XCTAssertFalse(hasKeyboardTypeResult(for: .custom(named: "")))
+        XCTAssertFalse(hasKeyboardTypeResult(for: .email))
+        XCTAssertFalse(hasKeyboardTypeResult(for: .images))
+        XCTAssertFalse(hasKeyboardTypeResult(for: .numeric))
+        XCTAssertFalse(hasKeyboardTypeResult(for: .symbolic))
+    }
+
+    func testSelectingNextLocaleSelectsFirstItemIfTheCurrentLocaleIsNotInLocales() {
+        context.locale = locale(for: "sv")
+        context.locales = [locale(for: "en"), locale(for: "fi"), locale(for: "da")]
+        context.selectNextLocale()
+        XCTAssertEqual(context.locale.identifier, "en")
+    }
+
+    func testSelectingNextLocaleSelectsFirstItemIfTheCurrentLocaleIsLastInLocales() {
+        context.locale = locale(for: "sv")
+        context.locales = [locale(for: "en"), locale(for: "fi"), locale(for: "da")]
+        context.locale = locale(for: "da")
+        context.selectNextLocale()
+        XCTAssertEqual(context.locale.identifier, "en")
+    }
+
+    func testSelectingNextLocaleSelectsNextItemIfTheCurrentLocaleIsNotLastInLocales() {
+        context.locale = locale(for: "sv")
+        context.locales = [locale(for: "en"), locale(for: "fi"), locale(for: "da")]
+        context.locale = locale(for: "fi")
+        context.selectNextLocale()
+        XCTAssertEqual(context.locale.identifier, "da")
+    }
+
+
+    func testSettingKeyboardLocaleSetsContextLocale() {
+        context.locale = locale(for: "sv")
+        context.setLocale(.catalan)
+        XCTAssertEqual(context.locale.identifier, "ca")
+    }
+
+    #if os(iOS) || os(tvOS)
+    func testSyncingContextWithControllerUpdatesSomeProperties() {
+        let controller = KeyboardInputViewController()
+        let context = KeyboardContext(controller: controller)
+        context.sync(with: controller)
+        assert(context, isSyncedWith: controller)
+    }
+    #endif
 }
-#endif

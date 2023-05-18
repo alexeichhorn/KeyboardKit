@@ -10,11 +10,21 @@
 
 "done" = "მზადაა";
 "go" = "გადასვლა";
+"join" = "join";
+"next" = "next";
 "ok" = "OK";
 "return" = "შეყვანა";
 "search" = "ძიება";
+"send" = "send";
 "space" = "ჰარი";
 
 "keyboardTypeAlphabetic" = "ა";
 "keyboardTypeNumeric" = "123";
 "keyboardTypeSymbolic" = "#+=";
+
+"searchEmoji" = "";
+
+/**
+ For emojis localization, copy the text in `Emojis.md`, then
+ replace this comment with it and translate the keys.
+ */

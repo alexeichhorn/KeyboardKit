@@ -3,45 +3,43 @@
 //  KeyboardKit
 //
 //  Created by Daniel Saidi on 2021-02-25.
-//  Copyright © 2021 Daniel Saidi. All rights reserved.
+//  Copyright © 2021-2023 Daniel Saidi. All rights reserved.
 //
 
 import SwiftUI
 
 /**
- This enum contains keyboard-specific, resource-based texts.
- 
- Texts are embedded as resources in the package, and use the
- SPM generated `.module` bundle by default. If not using SPM,
- `.module` will be undefined and the linking will fail. This
- is solved with the `Bundle+module` file.
- 
- Another problem with this is that SwiftUI previews will not
- work outside of this package, since the module is not found
- in previews. This will cause previews to crash. To fix this,
- use the `KeyboardPreviewMode`.
- 
- `TODO` Add emoji category keyboard-specific texts.
+ This enum defines keyboard-specific, localized texts.
  */
 public enum KKL10n: String, CaseIterable, Identifiable {
 
     case
-        done,
-        go,
-        ok,
-        `return`,
-        search,
-        space,
+    done,
+    go,
+    join,
+    next,
+    ok,
+    `return`,
+    search,
+    send,
+    space,
     
-        keyboardTypeAlphabetic,
-        keyboardTypeNumeric,
-        keyboardTypeSymbolic
-    
+    keyboardTypeAlphabetic,
+    keyboardTypeNumeric,
+    keyboardTypeSymbolic,
+
+    searchEmoji
+}
+
+public extension KKL10n {
+
     /**
-     Whether or not to use the `previewTextProvider` when a
-     color is presented in a preview.
+     The bundle to use to retrieve localized strings.
+
+     You should only override this value when the entire set
+     of localized texts should be loaded from another bundle.
      */
-    static var usePreviewTexts = false
+    static var bundle: Bundle = .keyboardKit
 }
 
 public extension KKL10n {
@@ -60,65 +58,51 @@ public extension KKL10n {
      The item's localized text.
      */
     var text: String {
-        if useRawText { return rawValue }
-        return NSLocalizedString(key, bundle: .module, comment: "")
+        NSLocalizedString(key, bundle: .keyboardKit, comment: "")
     }
     
     /**
-     The item's localized text for a certain `context`.
+     Get the localized text for a certain ``KeyboardContext``.
      */
     func text(for context: KeyboardContext) -> String {
         text(for: context.locale)
     }
     
     /**
-     The item's localized text for a certain `locale`.
+     Get the localized text for a certain ``KeyboardLocale``.
      */
     func text(for locale: KeyboardLocale) -> String {
         text(for: locale.locale)
     }
-    
+
     /**
-     The item's localized text for a certain `locale`.
+     Get the localized text for a certain `Locale`.
      */
     func text(for locale: Locale) -> String {
-        if useRawText { return rawValue }
-        guard
-            let bundlePath = Bundle.module.bundlePath(for: locale),
-            let bundle = Bundle(path: bundlePath)
-        else { return "" }
+        Self.text(forKey: key, locale: locale)
+    }
+
+    /**
+     Get a localized text for a certain ``KeyboardLocale``.
+     */
+    static func text(forKey key: String, locale: KeyboardLocale) -> String {
+        text(forKey: key, locale: locale.locale)
+    }
+
+    /**
+     Get a localized text for a certain `Locale`.
+     */
+    static func text(forKey key: String, locale: Locale) -> String {
+        guard let bundle = Bundle.keyboardKit.bundle(for: locale) else { return "" }
         return NSLocalizedString(key, bundle: bundle, comment: "")
     }
 }
 
-extension KKL10n {
-    
-    var isSwiftUIPreview: Bool {
-        ProcessInfo.processInfo.isSwiftUIPreview
-    }
-    
-    var useRawText: Bool {
-        isSwiftUIPreview && Self.usePreviewTexts
-    }
-}
-
-extension Bundle {
-    
-    func bundlePath(for locale: Locale) -> String? {
-        bundlePath(named: locale.identifier) ?? bundlePath(named: locale.languageCode)
-    }
-    
-    func bundlePath(named name: String?) -> String? {
-        path(forResource: name ?? "", ofType: "lproj")
-    }
-}
-
-#if os(iOS) || os(tvOS)
 struct KKL10n_Previews: PreviewProvider {
     
     static let context: KeyboardContext = {
         let context = KeyboardContext.preview
-        context.locale = KeyboardLocale.swedish.locale
+        context.locale = KeyboardLocale.norwegian.locale
         return context
     }()
     
@@ -127,17 +111,13 @@ struct KKL10n_Previews: PreviewProvider {
             List {
                 ForEach(KKL10n.allCases) { item in
                     VStack(alignment: .leading, spacing: 10) {
-                        Text("\(item.key)")
                         VStack(alignment: .leading) {
-                            Text("Locale: \(item.text(for: context))")
-                            ForEach(KeyboardLocale.allCases) {
-                                Text("\($0.id): \(item.text(for: $0))")
-                            }
+                            Text("default: \(item.text)")
+                            Text("context: \(item.text(for: context))")
                         }.font(.footnote)
                     }.padding(.vertical, 4)
                 }
-            }.navigationBarTitle("Translations")
+            }.navigationTitle("Translations")
         }
     }
 }
-#endif

@@ -10,11 +10,21 @@
 
 "done" = "تم";
 "go" = "اذهـب";
+"join" = "join";
+"next" = "next";
 "ok" = "OK";
 "return" = "↳";
 "search" = "بحث";
+"join" = "send";
 "space" = "مسافة";
 
 "keyboardTypeAlphabetic" = "ا‌ب‌ج";
 "keyboardTypeNumeric" = "١٢٣";
 "keyboardTypeSymbolic" = "#+=";
+
+"searchEmoji" = "";
+
+/**
+ For emojis localization, copy the text in `Emojis.md`, then
+ replace this comment with it and translate the keys.
+ */

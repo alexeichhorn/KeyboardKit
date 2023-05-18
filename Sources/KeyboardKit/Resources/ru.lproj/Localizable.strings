@@ -10,11 +10,21 @@
 
 "done" = "Готово";
 "go" = "Перейти";
-"ok" = "Ok";
+"join" = "Подкл.";
+"next" = "Далее";
+"ok" = "ОК";
 "return" = "Ввод";
 "search" = "Найти";
+"send" = "Отправить";
 "space" = "Пробел";
 
 "keyboardTypeAlphabetic" = "АБВ";
 "keyboardTypeNumeric" = "123";
 "keyboardTypeSymbolic" = "#+=";
+
+"searchEmoji" = "Найти эмодзи";
+
+/**
+ For emojis localization, copy the text in `Emojis.md`, then
+ replace this comment with it and translate the keys.
+ */

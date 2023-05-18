@@ -3,10 +3,9 @@
 //  KeyboardKit
 //
 //  Created by Daniel Saidi on 2021-04-01.
-//  Copyright © 2021 Daniel Saidi. All rights reserved.
+//  Copyright © 2021-2023 Daniel Saidi. All rights reserved.
 //
 
-#if os(iOS) || os(tvOS)
 import Foundation
 
 /**
@@ -68,11 +67,11 @@ open class StandardKeyboardFeedbackHandler: KeyboardFeedbackHandler {
      */
     open func triggerAudioFeedback(for gesture: KeyboardGesture, on action: KeyboardAction) {
         let custom = audioConfig.actions.first { $0.action == action }
-        if let custom = custom { return custom.feedback.play() }
+        if let custom = custom { return custom.feedback.trigger() }
         if action == .space && gesture == .longPress { return }
-        if action == .backspace { return audioConfig.delete.play() }
-        if action.isInputAction { return audioConfig.input.play() }
-        if action.isSystemAction { return audioConfig.system.play() }
+        if action == .backspace { return audioConfig.delete.trigger() }
+        if action.isInputAction { return audioConfig.input.trigger() }
+        if action.isSystemAction { return audioConfig.system.trigger() }
     }
     
     /**
@@ -92,8 +91,6 @@ open class StandardKeyboardFeedbackHandler: KeyboardFeedbackHandler {
         case .press: hapticConfig.tap.trigger()
         case .release: hapticConfig.tap.trigger()
         case .repeatPress: hapticConfig.repeat.trigger()
-        case .tap: hapticConfig.tap.trigger()
         }
     }
 }
-#endif

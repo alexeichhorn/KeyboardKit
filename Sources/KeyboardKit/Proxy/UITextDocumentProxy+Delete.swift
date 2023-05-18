@@ -3,27 +3,27 @@
 //  KeyboardKit
 //
 //  Created by Daniel Saidi on 2019-07-02.
-//  Copyright © 2021 Daniel Saidi. All rights reserved.
+//  Copyright © 2019-2023 Daniel Saidi. All rights reserved.
 //
 
 #if os(iOS) || os(tvOS)
 import UIKit
 
 public extension UITextDocumentProxy {
-    
-    /**
-     Delete backwards a certain number of times.
-     */
-    func deleteBackward(times: Int) {
-        for _ in 0..<times { deleteBackward() }
-    }
-    
+
     /**
      Delete backwards a certain range.
      */
     func deleteBackward(range: DeleteBackwardRange) {
         guard let text = deleteBackwardText(for: range) else { return deleteBackward() }
         deleteBackward(times: text.count)
+    }
+    
+    /**
+     Delete backwards a certain number of times.
+     */
+    func deleteBackward(times: Int) {
+        for _ in 0..<times { deleteBackward() }
     }
 }
 
@@ -32,7 +32,7 @@ extension UITextDocumentProxy {
     func deleteBackwardText(for range: DeleteBackwardRange) -> String? {
         guard let text = documentContextBeforeInput else { return nil }
         switch range {
-        case .char: return text.lastCharacter
+        case .character: return text.lastCharacter
         case .sentence: return text.lastSentenceSegment
         case .word: return text.lastWordSegment
         }
@@ -56,7 +56,7 @@ private extension String {
     
     func lastSegment(isSegmentDelimiter: (String) -> Bool) -> String {
         var result = last { $0.isWhitespace }.map { String($0) } ?? ""
-        var text = self.trimmingCharacters(in: .whitespaces)
+        var text = self.trimming(.whitespaces)
         var foundNonDelimiter = false
         while let char = text.popLast() {
             let char = String(char)

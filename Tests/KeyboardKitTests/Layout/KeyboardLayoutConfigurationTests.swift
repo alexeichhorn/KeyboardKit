@@ -3,158 +3,119 @@
 //  KeyboardKit
 //
 //  Created by Daniel Saidi on 2021-10-01.
-//  Copyright © 2021 Daniel Saidi. All rights reserved.
+//  Copyright © 2021-2023 Daniel Saidi. All rights reserved.
 //
 
-#if os(iOS)
-import Quick
-import Nimble
-import UIKit
+import XCTest
+
 @testable import KeyboardKit
 
-class KeyboardLayoutConfigurationTests: QuickSpec {
+class KeyboardLayoutConfigurationTests: XCTestCase {
+
+    func testStandardConfigurationIsCorrectForiPadInPortrait() {
+        let config = KeyboardLayoutConfiguration.standardPad
+        XCTAssertEqual(config.buttonCornerRadius, 5)
+        XCTAssertEqual(config.buttonInsets, .horizontal(6, vertical: 4))
+        XCTAssertEqual(config.rowHeight, 64)
+    }
     
-    override func spec() {
-        
-        describe("standard configuration constant") {
-            
-            it("is correct for iPad in landscape") {
-                let config = KeyboardLayoutConfiguration.standardPadLandscape
-                expect(config.buttonCornerRadius).to(equal(8))
-                expect(config.buttonInsets).to(equal(.horizontal(7, vertical: 6)))
-                expect(config.rowHeight).to(equal(86))
-            }
-            
-            it("is correct for iPad in portrait") {
-                let config = KeyboardLayoutConfiguration.standardPadPortrait
-                expect(config.buttonCornerRadius).to(equal(6))
-                expect(config.buttonInsets).to(equal(.horizontal(6, vertical: 4)))
-                expect(config.rowHeight).to(equal(64))
-            }
-            
-            it("is correct for iPhone in landscape") {
-                let config = KeyboardLayoutConfiguration.standardPhoneLandscape
-                expect(config.buttonCornerRadius).to(equal(4))
-                expect(config.buttonInsets).to(equal(.horizontal(3, vertical: 4)))
-                expect(config.rowHeight).to(equal(40))
-            }
-            
-            it("is correct for iPhone in portrait") {
-                let config = KeyboardLayoutConfiguration.standardPhonePortrait
-                expect(config.buttonCornerRadius).to(equal(4))
-                expect(config.buttonInsets).to(equal(.horizontal(3, vertical: 6)))
-                expect(config.rowHeight).to(equal(54))
-            }
-            
-            it("is correct for iPhone Pro Max in landscape") {
-                let config = KeyboardLayoutConfiguration.standardPhoneProMaxLandscape
-                expect(config.buttonCornerRadius).to(equal(4))
-                expect(config.buttonInsets).to(equal(.horizontal(3, vertical: 4)))
-                expect(config.rowHeight).to(equal(40))
-            }
-            
-            it("is correct for iPhone Pro Max in portrait") {
-                let config = KeyboardLayoutConfiguration.standardPhoneProMaxPortrait
-                expect(config.buttonCornerRadius).to(equal(4))
-                expect(config.buttonInsets).to(equal(.horizontal(3, vertical: 6)))
-                expect(config.rowHeight).to(equal(56))
-            }
-        }
-        
-        describe("standard keyboard configuration") {
-            
-            func config(
-                forIdiom idiom: UIUserInterfaceIdiom,
-                size: CGSize,
-                orientation: UIInterfaceOrientation) -> KeyboardLayoutConfiguration {
-                KeyboardLayoutConfiguration.standard(
-                    forIdiom: idiom,
-                    screenSize: size,
-                    orientation: orientation
-                )
-            }
-            
-            context("for iPad") {
-                
-                it("is correct for landscape") {
-                    let config = config(forIdiom: .pad, size: .iPadScreenLandscape, orientation: .landscapeRight)
-                    expect(config.buttonCornerRadius).to(equal(8))
-                    expect(config.buttonInsets).to(equal(.horizontal(7, vertical: 6)))
-                    expect(config.rowHeight).to(equal(86))
-                }
-                
-                it("is correct for portrait") {
-                    let config = config(forIdiom: .pad, size: .iPadScreenPortrait, orientation: .portrait)
-                    expect(config.buttonCornerRadius).to(equal(6))
-                    expect(config.buttonInsets).to(equal(.horizontal(6, vertical: 4)))
-                    expect(config.rowHeight).to(equal(64))
-                }
-            }
-            
-            context("for large iPad Pro") {
-                
-                it("is correct for landscape") {
-                    let config = config(forIdiom: .pad, size: .iPadProLargeScreenLandscape, orientation: .landscapeRight)
-                    expect(config.buttonCornerRadius).to(equal(8))
-                    expect(config.buttonInsets).to(equal(.horizontal(7, vertical: 5)))
-                    expect(config.rowHeight).to(equal(88))
-                }
-                
-                it("is correct for portrait") {
-                    let config = config(forIdiom: .pad, size: .iPadProLargeScreenPortrait, orientation: .portrait)
-                    expect(config.buttonCornerRadius).to(equal(6))
-                    expect(config.buttonInsets).to(equal(.horizontal(4, vertical: 4)))
-                    expect(config.rowHeight).to(equal(69))
-                }
-            }
-            
-            context("for small iPad Pro") {
-                
-                it("is correct for landscape") {
-                    let config = config(forIdiom: .pad, size: .iPadProSmallScreenLandscape, orientation: .landscapeRight)
-                    expect(config).to(equal(.standardPadLandscape))
-                }
-                
-                it("is correct for portrait") {
-                    let config = config(forIdiom: .pad, size: .iPadProSmallScreenPortrait, orientation: .portrait)
-                    expect(config).to(equal(.standardPadPortrait))
-                }
-            }
-            
-            context("for iPhone") {
-                
-                it("is correct for landscape") {
-                    let config = config(forIdiom: .phone, size: .zero, orientation: .landscapeRight)
-                    expect(config.buttonCornerRadius).to(equal(4))
-                    expect(config.buttonInsets).to(equal(.horizontal(3, vertical: 4)))
-                    expect(config.rowHeight).to(equal(40))
-                }
-                
-                it("is correct for portrait") {
-                    let config = config(forIdiom: .phone, size: .zero, orientation: .portrait)
-                    expect(config.buttonCornerRadius).to(equal(4))
-                    expect(config.buttonInsets).to(equal(.horizontal(3, vertical: 6)))
-                    expect(config.rowHeight).to(equal(54))
-                }
-            }
-            
-            context("for iPhone Pro Max") {
-                
-                it("is correct for landscape") {
-                    let config = config(forIdiom: .phone, size: .zero, orientation: .landscapeRight)
-                    expect(config.buttonCornerRadius).to(equal(4))
-                    expect(config.buttonInsets).to(equal(.horizontal(3, vertical: 4)))
-                    expect(config.rowHeight).to(equal(40))
-                }
-                
-                it("is correct for portrait") {
-                    let config = config(forIdiom: .phone, size: .iPhoneProMaxScreenLandscape, orientation: .portrait)
-                    expect(config.buttonCornerRadius).to(equal(4))
-                    expect(config.buttonInsets).to(equal(.horizontal(3, vertical: 6)))
-                    expect(config.rowHeight).to(equal(56))
-                }
-            }
-        }
+    func testStandardConfigurationIsCorrectForiPadInLandscape() {
+        let config = KeyboardLayoutConfiguration.standardPadLandscape
+        XCTAssertEqual(config.buttonCornerRadius, 7)
+        XCTAssertEqual(config.buttonInsets, .horizontal(7, vertical: 6))
+        XCTAssertEqual(config.rowHeight, 86)
+    }
+
+    func testStandardConfigurationIsCorrectForiPhoneInPortrait() {
+        let config = KeyboardLayoutConfiguration.standardPhone
+        XCTAssertEqual(config.buttonCornerRadius, 5)
+        XCTAssertEqual(config.buttonInsets, .horizontal(3, vertical: 6))
+        XCTAssertEqual(config.rowHeight, 54)
+    }
+
+    func testStandardConfigurationIsCorrectForiPhoneInLandscape() {
+        let config = KeyboardLayoutConfiguration.standardPhoneLandscape
+        XCTAssertEqual(config.buttonCornerRadius, 5)
+        XCTAssertEqual(config.buttonInsets, .horizontal(3, vertical: 4))
+        XCTAssertEqual(config.rowHeight, 40)
+    }
+
+    func testStandardConfigurationIsCorrectForiPhoneProMaxInPortrait() {
+        let config = KeyboardLayoutConfiguration.standardPhoneProMax
+        XCTAssertEqual(config.buttonCornerRadius, 5)
+        XCTAssertEqual(config.buttonInsets, .horizontal(3, vertical: 6))
+        XCTAssertEqual(config.rowHeight, 58)
+    }
+
+    func testStandardConfigurationIsCorrectForiPhoneProMaxInLandscape() {
+        let config = KeyboardLayoutConfiguration.standardPhoneProMaxLandscape
+        XCTAssertEqual(config.buttonCornerRadius, 5)
+        XCTAssertEqual(config.buttonInsets, .horizontal(3, vertical: 4))
+        XCTAssertEqual(config.rowHeight, 40)
+    }
+
+
+    func configuration(
+        for device: DeviceType,
+        size: CGSize,
+        orientation: InterfaceOrientation
+    ) -> KeyboardLayoutConfiguration {
+        KeyboardLayoutConfiguration.standard(
+            forDevice: device,
+            screenSize: size,
+            orientation: orientation
+        )
+    }
+
+    func testStandardKeyboardConfigurationForExplicitOrientations() {
+        var config = configuration(for: .pad, size: .iPadScreenLandscape, orientation: .landscapeRight)
+        XCTAssertEqual(config.buttonCornerRadius, 7)
+        XCTAssertEqual(config.buttonInsets, .horizontal(7, vertical: 6))
+        XCTAssertEqual(config.rowHeight, 86)
+
+        config = configuration(for: .pad, size: .iPadScreenPortrait, orientation: .portrait)
+        XCTAssertEqual(config.buttonCornerRadius, 5)
+        XCTAssertEqual(config.buttonInsets, .horizontal(6, vertical: 4))
+        XCTAssertEqual(config.rowHeight, 64)
+
+
+        config = configuration(for: .pad, size: .iPadProLargeScreenLandscape, orientation: .landscapeRight)
+        XCTAssertEqual(config.buttonCornerRadius, 8)
+        XCTAssertEqual(config.buttonInsets, .horizontal(7, vertical: 5))
+        XCTAssertEqual(config.rowHeight, 88)
+
+        config = configuration(for: .pad, size: .iPadProLargeScreenPortrait, orientation: .portrait)
+        XCTAssertEqual(config.buttonCornerRadius, 6)
+        XCTAssertEqual(config.buttonInsets, .horizontal(4, vertical: 4))
+        XCTAssertEqual(config.rowHeight, 69)
+
+
+        config = configuration(for: .pad, size: .iPadProSmallScreenLandscape, orientation: .landscapeRight)
+        XCTAssertEqual(config, .standardPadLandscape)
+
+        config = configuration(for: .pad, size: .iPadProSmallScreenPortrait, orientation: .portrait)
+        XCTAssertEqual(config, .standardPad)
+
+
+        config = configuration(for: .phone, size: .zero, orientation: .landscapeRight)
+        XCTAssertEqual(config.buttonCornerRadius, 5)
+        XCTAssertEqual(config.buttonInsets, .horizontal(3, vertical: 4))
+        XCTAssertEqual(config.rowHeight, 40)
+
+        config = configuration(for: .phone, size: .zero, orientation: .portrait)
+        XCTAssertEqual(config.buttonCornerRadius, 5)
+        XCTAssertEqual(config.buttonInsets, .horizontal(3, vertical: 6))
+        XCTAssertEqual(config.rowHeight, 54)
+
+
+        config = configuration(for: .phone, size: .zero, orientation: .landscapeRight)
+        XCTAssertEqual(config.buttonCornerRadius, 5)
+        XCTAssertEqual(config.buttonInsets, .horizontal(3, vertical: 4))
+        XCTAssertEqual(config.rowHeight, 40)
+
+        config = configuration(for: .phone, size: .iPhoneProMaxScreenLandscape, orientation: .portrait)
+        XCTAssertEqual(config.buttonCornerRadius, 5)
+        XCTAssertEqual(config.buttonInsets, .horizontal(3, vertical: 6))
+        XCTAssertEqual(config.rowHeight, 54)
     }
 }
-#endif

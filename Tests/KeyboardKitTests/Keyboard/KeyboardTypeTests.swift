@@ -3,35 +3,48 @@
 //  KeyboardKit
 //
 //  Created by Daniel Saidi on 2020-06-15.
-//  Copyright © 2021 Daniel Saidi. All rights reserved.
+//  Copyright © 2021-2023 Daniel Saidi. All rights reserved.
 //
 
-import Quick
-import Nimble
 import KeyboardKit
+import XCTest
 
-class KeyboardTypeTests: QuickSpec {
-    
-    override func spec() {
-        
-        describe("is alphabetic") {
-            
-            func result(for type: KeyboardType) -> Bool {
-                type.isAlphabetic
-            }
-            
-            it("is only true for alphabetic types") {
-                expect(result(for: .alphabetic(.lowercased))).to(beTrue())
-                expect(result(for: .alphabetic(.uppercased))).to(beTrue())
-                expect(result(for: .alphabetic(.capsLocked))).to(beTrue())
-                expect(result(for: .numeric)).to(beFalse())
-                expect(result(for: .symbolic)).to(beFalse())
-                expect(result(for: .email)).to(beFalse())
-                expect(result(for: .emojis)).to(beFalse())
-                expect(result(for: .images)).to(beFalse())
-                expect(result(for: .images)).to(beFalse())
-                expect(result(for: .custom(named: ""))).to(beFalse())
-            }
-        }
+class KeyboardTypeTests: XCTestCase {
+
+    func isAlphabetic(_ type: KeyboardType) -> Bool {
+        type.isAlphabetic
+    }
+
+    func isAlphabeticUppercased(_ type: KeyboardType) -> Bool {
+        type.isAlphabeticUppercased
+    }
+
+    func isAlphabetic(_ type: KeyboardType, _ keyboardCase: KeyboardCase) -> Bool {
+        type.isAlphabetic(keyboardCase)
+    }
+
+    func testIsAlphabeticIsOnlyTrueForAlphabeticTypes() {
+        XCTAssertTrue(isAlphabetic(.alphabetic(.lowercased)))
+        XCTAssertTrue(isAlphabetic(.alphabetic(.uppercased)))
+        XCTAssertTrue(isAlphabetic(.alphabetic(.capsLocked)))
+        XCTAssertFalse(isAlphabetic(.numeric))
+        XCTAssertFalse(isAlphabetic(.symbolic))
+        XCTAssertFalse(isAlphabetic(.email))
+        XCTAssertFalse(isAlphabetic(.emojis))
+        XCTAssertFalse(isAlphabetic(.images))
+        XCTAssertFalse(isAlphabetic(.images))
+        XCTAssertFalse(isAlphabetic(.custom(named: "")))
+    }
+
+    func testIsAlphabeticUppercasedIsTrueForUppercaseOrCapslock() {
+        XCTAssertFalse(isAlphabeticUppercased(.alphabetic(.lowercased)))
+        XCTAssertTrue(isAlphabeticUppercased(.alphabetic(.uppercased)))
+        XCTAssertTrue(isAlphabeticUppercased(.alphabetic(.capsLocked)))
+    }
+
+    func testIsAlphabeticWithCaseIsTrueForMatchingTypes() {
+        XCTAssertFalse(isAlphabetic(.alphabetic(.lowercased), .uppercased))
+        XCTAssertTrue(isAlphabetic(.alphabetic(.uppercased), .uppercased))
+        XCTAssertTrue(isAlphabetic(.alphabetic(.capsLocked), .capsLocked))
     }
 }

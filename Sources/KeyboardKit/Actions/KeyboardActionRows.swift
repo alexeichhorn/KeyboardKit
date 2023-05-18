@@ -3,16 +3,16 @@
 //  KeyboardKit
 //
 //  Created by Daniel Saidi on 2019-07-04.
-//  Copyright © 2021 Daniel Saidi. All rights reserved.
+//  Copyright © 2021-2023 Daniel Saidi. All rights reserved.
 //
 
 import Foundation
 
 /**
  This typealias represents a ``KeyboardActions`` array.
- 
+
  The typealias makes it easier to create and handle keyboard
- action collections that represent multiple rows.
+ action rows and collections.
  */
 public typealias KeyboardActionRows = [KeyboardActions]
 

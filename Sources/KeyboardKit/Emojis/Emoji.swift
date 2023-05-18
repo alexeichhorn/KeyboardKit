@@ -3,7 +3,7 @@
 //  KeyboardKit
 //
 //  Created by Daniel Saidi on 2021-01-17.
-//  Copyright © 2021 Daniel Saidi. All rights reserved.
+//  Copyright © 2021-2023 Daniel Saidi. All rights reserved.
 //
 
 import SwiftUI
@@ -29,12 +29,7 @@ public struct Emoji: Equatable, Codable, Identifiable {
 }
 
 public extension Emoji {
-    
-    /**
-     The emoji's unique identifier.
-     */
-    var id: String { char }
-    
+
     /**
      Get all emojis from all categories.
      */
@@ -43,8 +38,14 @@ public extension Emoji {
     }
 }
 
-#if os(iOS)
-@available(iOS 14.0, *)
+public extension Emoji {
+    
+    /**
+     The emoji's unique identifier.
+     */
+    var id: String { char }
+}
+
 struct Emoji_Previews: PreviewProvider {
     
     static var previews: some View {
@@ -57,4 +58,3 @@ struct Emoji_Previews: PreviewProvider {
         }
     }
 }
-#endif

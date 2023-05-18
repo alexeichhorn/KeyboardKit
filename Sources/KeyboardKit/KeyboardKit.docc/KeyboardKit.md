@@ -7,40 +7,107 @@ KeyboardKit helps you build custom keyboards with Swift and SwiftUI.
 
 ![KeyboardKit logo](Logo.png)
 
-KeyboardKit helps you build custom keyboards with Swift and SwiftUI. It extends Apple's native keyboard extension APIs and provides you with a lot more functionality than is otherwise available. 
+KeyboardKit helps you build custom keyboards with Swift and SwiftUI. It extends Apple's native keyboard extension APIs and provides you with more functionality than is otherwise available. 
 
-KeyboardKit also provides you with utilities that lets you mimic native iOS keyboards. You can use ``SystemKeyboard`` and style it a little (or a lot) or use completely custom views or designs.
+KeyboardKit also provides you with utilities that lets you mimic native iOS keyboards. You can use ``SystemKeyboard`` and style it as much as you want and customize it with completely custom views or designs.
 
 
-#### About this documentation
 
-This documentation is generated with Xcode's new DocC engine. Since DocC currently omits extensions, a lot of library functionality is currently missing in the documentation.
+## Supported Platforms
+
+KeyboardKit supports `iOS 13`, `macOS 11`, `tvOS 13` and `watchOS 6`.
+
+Although KeyboardKit builds on all platform, some features are unavailable on some platforms.
+
+
+
+## Installation
+
+KeyboardKit can be installed with the Swift Package Manager:
+
+```
+https://github.com/KeyboardKit/KeyboardKit.git
+```
+
+or with CocoaPods:
+
+```
+pod KeyboardKit
+```
+
+You can add the library to the main app, the keyboard extension and any targets that need it.
+
+
+
+## About this documentation
+
+The online documentation is currently iOS-specific. To generate documentation for other platforms, open the package in Xcode, select a simulator then run `Product/Build Documentation`.
+
+Note that extensions to native types are not included in this documentation. This means that extensions to e.g. `UITextDocumentProxy`, `String` etc. are not included in the documentation. KeyboardKit adds custom protocols to help exposing these parts of the library to the documentation engine, but there are many parts that are still omitted.
+
+
+
+## License
+
+KeyboardKit is available under the MIT license.
+
+
+
+[KeyboardKit]: https://github.com/KeyboardKit/KeyboardKit
+[KeyboardKitPro]: https://github.com/KeyboardKit/KeyboardKitPro
 
 
 
 ## Topics
 
-### Articles
+### Getting Started
 
 - <doc:Getting-Started>
-- <doc:Going-Further>
-- <doc:Understanding-Keyboard-Actions>
-- <doc:Understanding-Keyboard-Appearance>
-- <doc:Understanding-Keyboard-Feedback>
-- <doc:Understanding-Keyboard-Input-Sets>
-- <doc:Understanding-Keyboard-Layout>
-- <doc:Understanding-Keyboard-Localization>
-- <doc:Understanding-Autocomplete>
+
+### Essentials
+
+- <doc:Keyboard>
+
+### Articles
+
+- <doc:Actions>
+- <doc:Appearance>
+- <doc:Autocomplete>
+- <doc:Callouts>
+- <doc:Dictation>
+- <doc:Emojis>
+- <doc:External-Keyboards>
+- <doc:Feedback>
+- <doc:Gestures>
+- <doc:Input>
+- <doc:Layout>
+- <doc:Localization>
+- <doc:Previews>
+- <doc:Proxy-Extensions>
+- <doc:Routing>
+- <doc:RTL>
+- <doc:Settings>
 
 ### Keyboard
 
 - ``KeyboardInputViewController``
+
+- ``KeyboardAutocapitalizationType``
+- ``KeyboardBehavior``
 - ``KeyboardContext``
-- ``KeyboardCasing``
+- ``KeyboardController``
 - ``KeyboardType``
+- ``KeyboardEnabledLabel``
+- ``KeyboardEnabledLabelStyle``
 - ``KeyboardEnabledState``
 - ``KeyboardEnabledStateInspector``
 - ``KeyboardHostingController``
+- ``KeyboardReturnKeyType``
+- ``KeyboardTextContext``
+- ``NextKeyboardButton``
+- ``NextKeyboardController``
+- ``StandardKeyboardBehavior``
+- ``StaticKeyboardBehavior``
 
 ### Actions
 
@@ -54,54 +121,96 @@ This documentation is generated with Xcode's new DocC engine. Since DocC current
 ### Appearance
 
 - ``KeyboardAppearance``
-- ``KeyboardColor``
+- ``KeyboardAppearanceViewModifier``
+- ``KeyboardBackgroundStyle``
+- ``KeyboardBackgroundType``
+- ``KeyboardButtonStyle``
+- ``KeyboardButtonBorderStyle``
+- ``KeyboardButtonShadowStyle``
+- ``KeyboardCalloutStyle``
+- ``KeyboardActionCalloutStyle``
+- ``KeyboardInputCalloutStyle``
+- ``KeyboardFont``
+- ``KeyboardFontType``
+- ``KeyboardFontWeight``
 - ``StandardKeyboardAppearance``
-
-### Audio
-
-- ``SystemAudio``
-- ``SystemAudioPlayer``
-- ``StandardSystemAudioPlayer``
-- ``DisabledSystemAudioPlayer``
 
 ### Autocomplete
 
+- ``AutocompleteCompletion``
 - ``AutocompleteContext``
 - ``AutocompleteProvider``
-- ``AutocompleteSuggestion``
-- ``StandardAutocompleteSuggestion``
-
-### Autocomplete Types
-
-- ``AutocompleteCompletion``
 - ``AutocompleteResult``
 - ``AutocompleteSpaceState``
-
-### Behavior
-
-- ``KeyboardBehavior``
-- ``StandardKeyboardBehavior``
-- ``StaticKeyboardBehavior``
+- ``AutocompleteSuggestion``
+- ``AutocompleteToolbar``
+- ``AutocompleteToolbarItem``
+- ``AutocompleteToolbarItemBackgroundStyle``
+- ``AutocompleteToolbarItemStyle``
+- ``AutocompleteToolbarItemSubtitle``
+- ``AutocompleteToolbarItemTitle``
+- ``AutocompleteToolbarSeparator``
+- ``AutocompleteToolbarSeparatorStyle``
+- ``AutocompleteToolbarStyle``
+- ``DisabledAutocompleteProvider``
+- ``PrefersAutocompleteResolver``
 
 ### Callouts
 
+- ``ActionCallout``
 - ``ActionCalloutContext``
 - ``CalloutActionProvider``
+- ``CalloutButtonArea``
+- ``CalloutCurve``
+- ``InputCallout``
 - ``InputCalloutContext``
+- ``KeyboardCalloutContext``
 - ``StandardCalloutActionProvider``
 
 - ``BaseCalloutActionProvider``
 - ``EnglishCalloutActionProvider``
 - ``LocalizedCalloutActionProvider``
+- ``DisabledCalloutActionProvider``
+
+### Casing
+
+- ``KeyboardCase``
+- ``KeyboardCaseAdjustable``
+
+### Colors
+
+- ``KeyboardColor``
+- ``KeyboardColorReader``
 
 ### Device
 
 - ``DeviceType``
+- ``InterfaceOrientation``
+
+### Dictation
+
+- ``DictationAuthorizationStatus``
+- ``DictationConfiguration``
+- ``DictationContext``
+- ``DictationService``
+- ``DictationServiceError``
+- ``DisabledDictationService``
+- ``DisabledKeyboardDictationService``
+- ``KeyboardDictationConfiguration``
+- ``KeyboardDictationService``
 
 ### Emojis
 
 - ``Emoji``
+- ``EmojiAnalyzer``
 - ``EmojiCategory``
+- ``EmojiCategoryKeyboard``
+- ``EmojiCategoryKeyboardMenu``
+- ``EmojiCategoryTitle``
+- ``EmojiKeyboard``
+- ``EmojiKeyboardButton``
+- ``EmojiKeyboardItem``
+- ``EmojiKeyboardStyle``
 - ``EmojiProvider``
 - ``FrequentEmojiProvider``
 - ``MostRecentEmojiProvider``
@@ -110,46 +219,59 @@ This documentation is generated with Xcode's new DocC engine. Since DocC current
 
 - ``ExternalKeyboardContext``
 
+### Features
+
+- ``FeatureToggle``
+
 ### Feedback
 
+- ``AudioFeedback``
 - ``AudioFeedbackConfiguration``
+- ``AudioFeedbackEngine``
+- ``HapticFeedback``
 - ``HapticFeedbackConfiguration``
+- ``HapticFeedbackEngine``
 - ``KeyboardFeedbackHandler``
 - ``KeyboardFeedbackSettings``
 - ``StandardKeyboardFeedbackHandler``
+- ``StandardHapticFeedbackEngine``
+- ``StandardAudioFeedbackEngine``
+- ``DisabledAudioFeedbackEngine``
+- ``DisabledHapticFeedbackEngine``
 
 ### Gestures
 
 - ``DragGestureHandler``
+- ``GestureButton``
+- ``GestureButtonDefaults``
 - ``KeyboardGesture``
 - ``RepeatGestureTimer``
+- ``ScrollViewGestureButton``
+- ``SpaceLongPressBehavior``
 - ``SpaceCursorDragGestureHandler``
 - ``SpaceDragSensitivity``
 
-### Haptics
+### Images
 
-- ``HapticFeedback``
-- ``HapticFeedbackPlayer``
-- ``StandardHapticFeedbackPlayer``
-- ``DisabledHapticFeedbackPlayer``
+- ``KeyboardImageReader``
 
 ### Input
 
 - ``InputSet``
 - ``InputSetItem``
 - ``InputSetProvider``
+- ``InputSetProviderBased``
 - ``InputSetRow``
 - ``InputSetRows``
+- ``LocalizedInputSetProvider``
 - ``StandardInputSetProvider``
+- ``StaticInputSetProvider``
 
 - ``AlphabeticInputSet``
 - ``NumericInputSet``
 - ``SymbolicInputSet``
 
-- ``DeviceSpecificInputSetProvider``
 - ``EnglishInputSetProvider``
-- ``LocalizedInputSetProvider``
-- ``StaticInputSetProvider``
 
 ### Layout
 
@@ -160,30 +282,31 @@ This documentation is generated with Xcode's new DocC engine. Since DocC current
 - ``KeyboardLayoutItemRows``
 - ``KeyboardLayoutItemSize``
 - ``KeyboardLayoutItemWidth``
+- ``KeyboardLayoutProvider``
+- ``KeyboardLayoutProviderProxy``
 - ``KeyboardRowItem``
 
-### Layout Providers
-
-- ``KeyboardLayoutProvider``
 - ``StandardKeyboardLayoutProvider``
 - ``iPadKeyboardLayoutProvider``
 - ``iPhoneKeyboardLayoutProvider``
+- ``LocalizedKeyboardLayoutProvider``
 - ``StaticKeyboardLayoutProvider``
 - ``SystemKeyboardLayoutProvider``
 
-### Locale
-
-- ``KeyboardLocale``
-- ``LocaleDictionary``
-- ``LocalizedService``
+- ``EnglishKeyboardLayoutProvider``
 
 ### Localization
 
+- ``KeyboardLocale``
 - ``KKL10n``
+- ``LocaleContextMenu``
+- ``LocaleDictionary``
+- ``LocaleDirectionAnalyzer``
+- ``LocaleFlagProvider``
+- ``LocaleNameProvider``
+- ``LocalizedService``
 
 ### Previews
-
-- ``KeyboardPreviewMode``
 
 - ``PreviewCalloutActionProvider``
 - ``PreviewInputSetProvider``
@@ -192,55 +315,34 @@ This documentation is generated with Xcode's new DocC engine. Since DocC current
 - ``PreviewKeyboardLayoutProvider``
 - ``PreviewTextDocumentProxy``
 
-### Proxy
+### Routing
 
 - ``TextInputProxy``
-
-### Styles
-
-- ``ActionCalloutStyle``
-- ``AutocompleteToolbarStyle``
-- ``AutocompleteToolbarItemStyle``
-- ``AutocompleteToolbarItemBackgroundStyle``
-- ``AutocompleteToolbarSeparatorStyle``
-- ``CalloutStyle``
-- ``EmojiKeyboardStyle``
-- ``InputCalloutStyle``
-- ``KeyboardButtonStyle``
-- ``KeyboardButtonBorderStyle``
-- ``KeyboardButtonShadowStyle``
-
-### Views
-
-- ``ActionCallout``
-- ``AutocompleteToolbar``
-- ``AutocompleteToolbarItem``
-- ``AutocompleteToolbarItemSubtitle``
-- ``AutocompleteToolbarItemTitle``
-- ``AutocompleteToolbarSeparator``
-- ``CalloutButtonArea``
-- ``CalloutCurve``
-- ``InputCallout``
-- ``EmojiCategoryKeyboard``
-- ``EmojiCategoryKeyboardMenu``
-- ``EmojiCategoryTitle``
-- ``EmojiKeyboard``
-- ``EmojiKeyboardButton``
-- ``KeyboardGrid``
-- ``KeyboardImageButton``
-- ``KeyboardInputTextComponent``
+- ``KeyboardInputComponent``
+- ``KeyboardInputView``
 - ``KeyboardTextField``
 - ``KeyboardTextView``
-- ``NextKeyboardButton``
+
+### Settings
+
+- ``KeyboardSettingsLink``
+- ``KeyboardSettingsUrlProvider``
+
+### System Keyboard
+
 - ``SystemKeyboard``
-- ``SystemKeyboardActionButton``
-- ``SystemKeyboardActionButtonContent``
 - ``SystemKeyboardButton``
 - ``SystemKeyboardButtonBody``
+- ``SystemKeyboardButtonContent``
 - ``SystemKeyboardButtonRowItem``
 - ``SystemKeyboardButtonShadow``
 - ``SystemKeyboardButtonText``
-- ``SystemKeyboardSpaceButton``
-- ``SystemKeyboardSpaceButtonContent``
-- ``StandardSystemKeyboardButtonContent``
-- ``StandardSystemKeyboardButtonView``
+- ``SystemKeyboardSpaceContent``
+
+### Text
+
+- ``CasingAnalyzer``
+- ``KeyboardCharacterProvider``
+- ``QuotationAnalyzer``
+- ``SentenceAnalyzer``
+- ``WordAnalyzer``

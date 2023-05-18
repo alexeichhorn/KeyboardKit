@@ -3,48 +3,43 @@
 //  KeyboardKit
 //
 //  Created by Daniel Saidi on 2020-12-01.
-//  Copyright © 2021 Daniel Saidi. All rights reserved.
+//  Copyright © 2020-2023 Daniel Saidi. All rights reserved.
 //
 
 import Foundation
 
 /**
- This input set provider provides English input sets.
+ This input set provider returns standard English input sets.
  
- Since currencies can vary between English locales, you have
- the option to override the currency symbol. You can provide
- a `numericCurrency` that will be used for numeric keyboards,
- and a `symbolicCurrency` that will be used for symbolic. By
- default, `$` is used for numeric and `£` for symbolic.
+ Since currencies can vary between English keyboards, we can
+ override the currency symbols that are shown in the numeric
+ and symbolic keyboards.
  
  KeyboardKit Pro adds a provider for each ``KeyboardLocale``
- Check out the demo app to see them in action.
+ Check out the Pro demo app to see them in action.
  */
-public class EnglishInputSetProvider: DeviceSpecificInputSetProvider, LocalizedService {
+public class EnglishInputSetProvider: InputSetProvider, LocalizedService {
     
     /**
      Create an English input set provider.
+
+     This input set supports QWERTY, QWERTZ and AZERTY, with
+     QWERTY being the default.
      
      - Parameters:
-       - numericCurrency: The currency to use for the numeric input set.
-       - symbolicCurrency: The currency to use for the symbolic input set.
+       - alphabetic: The alphabetic input set to use, by default ``AlphabeticInputSet/english``.
+       - numericCurrency: The currency to use for the numeric input set, by default `$`.
+       - symbolicCurrency: The currency to use for the symbolic input set, by default `£`.
      */
     public init(
+        alphabetic: AlphabeticInputSet = .english,
         numericCurrency: String = "$",
-        symbolicCurrency: String = "£") {
-        self.numericCurrency = numericCurrency
-        self.symbolicCurrency = symbolicCurrency
+        symbolicCurrency: String = "£"
+    ) {
+        self.alphabeticInputSet = alphabetic
+        self.numericInputSet = .english(currency: numericCurrency)
+        self.symbolicInputSet = .english(currency: symbolicCurrency)
     }
-    
-    /**
-     The currency to use for the numeric input set.
-     */
-    public let numericCurrency: String
-    
-    /**
-     The currency to use for the symbolic input set.
-     */
-    public let symbolicCurrency: String
     
     /**
      The locale identifier.
@@ -54,33 +49,43 @@ public class EnglishInputSetProvider: DeviceSpecificInputSetProvider, LocalizedS
     /**
      The input set to use for alphabetic keyboards.
      */
-    public var alphabeticInputSet: AlphabeticInputSet {
-        AlphabeticInputSet(rows: [
-            row("qwertyuiop"),
-            row("asdfghjkl"),
-            row(phone: "zxcvbnm", pad: "zxcvbnm,.")
-        ])
-    }
+    public let alphabeticInputSet: AlphabeticInputSet
     
     /**
      The input set to use for numeric keyboards.
      */
-    public var numericInputSet: NumericInputSet {
-        NumericInputSet(rows: [
-            row("1234567890"),
-            row(phone: "-/:;()\(numericCurrency)&@”", pad: "@#\(numericCurrency)&*()’”"),
-            row(phone: ".,?!’", pad: "%-+=/;:!?")
-        ])
-    }
+    public let numericInputSet: NumericInputSet
     
     /**
      The input set to use for symbolic keyboards.
      */
-    public var symbolicInputSet: SymbolicInputSet {
-        SymbolicInputSet(rows: [
-            row(phone: "[]{}#%^*+=", pad: "1234567890"),
-            row(phone: "_\\|~<>€\(symbolicCurrency)¥•", pad: "€\(symbolicCurrency)¥_^[]{}"),
-            row(phone: ".,?!’", pad: "§|~…\\<>!?")
-        ])
+    public let symbolicInputSet: SymbolicInputSet
+}
+
+public extension AlphabeticInputSet {
+
+    /**
+     A standard, English input set.
+     */
+    static let english = AlphabeticInputSet.qwerty
+}
+
+public extension NumericInputSet {
+
+    /**
+     A standard, English input set.
+     */
+    static func english(currency: String) -> NumericInputSet {
+        .standard(currency: currency)
+    }
+}
+
+public extension SymbolicInputSet {
+
+    /**
+     A standard, English input set.
+     */
+    static func english(currency: String) -> SymbolicInputSet {
+        .standard(currencies: "€\(currency)¥".chars)
     }
 }

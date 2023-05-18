@@ -10,11 +10,21 @@
 
 "done" = "Valmis";
 "go" = "Mine";
+"join" = "join";
+"next" = "next";
 "ok" = "OK";
 "return" = "Sisestus";
 "search" = "Otsi";
+"send" = "send";
 "space" = "Tühik";
 
 "keyboardTypeAlphabetic" = "ABC";
 "keyboardTypeNumeric" = "123";
 "keyboardTypeSymbolic" = "#+=";
+
+"searchEmoji" = "";
+
+/**
+ For emojis localization, copy the text in `Emojis.md`, then
+ replace this comment with it and translate the keys.
+ */

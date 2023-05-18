@@ -3,85 +3,68 @@
 //  KeyboardKit
 //
 //  Created by Daniel Saidi on 2021-02-17.
-//  Copyright © 2021 Daniel Saidi. All rights reserved.
+//  Copyright © 2021-2023 Daniel Saidi. All rights reserved.
 //
 
-#if os(iOS) || os(tvOS)
-import Quick
-import Nimble
 import KeyboardKit
+import XCTest
 
-class StandardKeyboardLayoutProviderTests: QuickSpec {
+class StandardKeyboardLayoutProviderTests: XCTestCase {
     
-    override func spec() {
-        
-        var provider: StandardKeyboardLayoutProvider!
-        var inputSetProvider: MockInputSetProvider!
-        var context: KeyboardContext!
-        var device: MockDevice!
-        
-        beforeEach {
-            device = MockDevice()
-            context = KeyboardContext(
-                controller: MockKeyboardInputViewController(),
-                device: device)
-            inputSetProvider = MockInputSetProvider()
-            inputSetProvider.alphabeticInputSetValue = AlphabeticInputSet(rows: InputSetRows([["a", "b", "c"], ["a", "b", "c"], ["a", "b", "c"]]))
-            inputSetProvider.numericInputSetValue = NumericInputSet(rows: InputSetRows([["1", "2", "3"], ["1", "2", "3"], ["1", "2", "3"]]))
-            inputSetProvider.symbolicInputSetValue = SymbolicInputSet(rows: InputSetRows([[",", ".", "-"], [",", ".", "-"], [",", ".", "-"]]))
-            provider = StandardKeyboardLayoutProvider(
-                inputSetProvider: inputSetProvider,
-                dictationReplacement: .primary(.go))
-        }
-        
-        
-        describe("keyboard layout provider for context") {
-            
-            it("is phone provider if context device is phone") {
-                device.userInterfaceIdiomValue = .phone
-                let result = provider.layoutProvider(for: context)
-                expect(result).to(be(provider.iPhoneProvider))
-            }
-            
-            it("is pad provider if context device is pad") {
-                device.userInterfaceIdiomValue = .pad
-                let result = provider.layoutProvider(for: context)
-                expect(result).to(be(provider.iPadProvider))
-            }
-        }
-        
-        describe("keyboard layout for context (just testing this one)") {
-            
-            it("is phone layout if context device is phone") {
-                device.userInterfaceIdiomValue = .phone
-                let layout = provider.keyboardLayout(for: context)
-                let phoneLayout = provider.iPhoneProvider.keyboardLayout(for: context)
-                let padLayout = provider.iPadProvider.keyboardLayout(for: context)
-                expect(layout.itemRows).to(equal(phoneLayout.itemRows))
-                expect(layout.itemRows).toNot(equal(padLayout.itemRows))
-            }
-            
-            it("is pad layout if context device is pad") {
-                device.userInterfaceIdiomValue = .pad
-                let layout = provider.keyboardLayout(for: context)
-                let phoneLayout = provider.iPhoneProvider.keyboardLayout(for: context)
-                let padLayout = provider.iPadProvider.keyboardLayout(for: context)
-                expect(layout.itemRows).toNot(equal(phoneLayout.itemRows))
-                expect(layout.itemRows).to(equal(padLayout.itemRows))
-            }
-        }
-        
-        describe("registering input set provider") {
-            
-            it("changes the provider instance for all providers") {
-                let newProvider = MockInputSetProvider()
-                provider.register(inputSetProvider: newProvider)
-                expect(provider.inputSetProvider).toNot(be(inputSetProvider))
-                expect(provider.inputSetProvider).to(be(newProvider))
-                expect(provider.iPhoneProvider.inputSetProvider).to(be(newProvider))
-                expect(provider.iPadProvider.inputSetProvider).to(be(newProvider))
-            }
-        }
+    var inputSetProvider: MockInputSetProvider!
+    var keyboardContext: KeyboardContext!
+    var provider: StandardKeyboardLayoutProvider!
+
+    override func setUp() {
+        keyboardContext = KeyboardContext()
+        inputSetProvider = MockInputSetProvider()
+        inputSetProvider.alphabeticInputSetValue = AlphabeticInputSet(rows: [["a", "b", "c"], ["a", "b", "c"], ["a", "b", "c"]].map(InputSetRow.init(chars:)))
+        inputSetProvider.numericInputSetValue = NumericInputSet(rows: [["1", "2", "3"], ["1", "2", "3"], ["1", "2", "3"]].map(InputSetRow.init(chars:)))
+        inputSetProvider.symbolicInputSetValue = SymbolicInputSet(rows: [[",", ".", "-"], [",", ".", "-"], [",", ".", "-"]].map(InputSetRow.init(chars:)))
+        provider = StandardKeyboardLayoutProvider(
+            keyboardContext: keyboardContext,
+            inputSetProvider: inputSetProvider)
+    }
+
+    func testKeyboardLayoutProviderForContextIsPhoneProviderIfContextDeviceIsPhone() {
+        keyboardContext.deviceType = .phone
+        let result = provider.keyboardLayoutProvider(for: keyboardContext)
+        XCTAssertTrue(result === provider.iPhoneProvider)
+    }
+
+    func testKeyboardLayoutProviderForContextIsPhoneProviderIfContextDeviceIsPad() {
+        keyboardContext.deviceType = .pad
+        let result = provider.keyboardLayoutProvider(for: keyboardContext)
+        XCTAssertTrue(result === provider.iPadProvider)
+    }
+
+
+    func testKeyboardLayoutForContextIsPhoneLayoutIfContentDeviceIsPhone() {
+        keyboardContext.deviceType = .phone
+        let layout = provider.keyboardLayout(for: keyboardContext)
+        let phoneLayout = provider.iPhoneProvider.keyboardLayout(for: keyboardContext)
+        let padLayout = provider.iPadProvider.keyboardLayout(for: keyboardContext)
+        XCTAssertEqual(layout.itemRows, phoneLayout.itemRows)
+        XCTAssertNotEqual(layout.itemRows, padLayout.itemRows)
+    }
+
+    func testKeyboardLayoutForContextIsPadLayoutIfContentDeviceIsPad() {
+        keyboardContext.deviceType = .pad
+        let layout = provider.keyboardLayout(for: keyboardContext)
+        let phoneLayout = provider.iPhoneProvider.keyboardLayout(for: keyboardContext)
+        let padLayout = provider.iPadProvider.keyboardLayout(for: keyboardContext)
+        XCTAssertNotEqual(layout.itemRows, phoneLayout.itemRows)
+        XCTAssertEqual(layout.itemRows, padLayout.itemRows)
+    }
+
+
+    func testRegisteringInputSetProviderChangesInstanceForAllProviders() {
+        let newProvider = MockInputSetProvider()
+        keyboardContext.deviceType = .phone
+        provider.register(inputSetProvider: newProvider)
+        XCTAssertFalse(provider.inputSetProvider === inputSetProvider)
+        XCTAssertTrue(provider.inputSetProvider === newProvider)
+        XCTAssertTrue(provider.iPhoneProvider.inputSetProvider === newProvider)
+        XCTAssertTrue(provider.iPadProvider.inputSetProvider === newProvider)
     }
 }
-#endif

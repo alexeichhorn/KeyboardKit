@@ -3,59 +3,44 @@
 //  KeyboardKit
 //
 //  Created by Daniel Saidi on 2019-07-04.
-//  Copyright © 2021 Daniel Saidi. All rights reserved.
+//  Copyright © 2019-2023 Daniel Saidi. All rights reserved.
 //
 
-#if os(iOS)
-import Quick
-import Nimble
 import KeyboardKit
+import XCTest
 
-class StandardKeyboardFeedbackHandlerTests: QuickSpec {
+class StandardKeyboardFeedbackHandlerTests: XCTestCase {
+
+    var handler: StandardKeyboardFeedbackHandler!
+
+    var audioEngine: MockAudioFeedbackEngine!
+    var hapticEngine: MockHapticFeedbackEngine!
+
+    override func setUp() {
+        audioEngine = MockAudioFeedbackEngine()
+        hapticEngine = MockHapticFeedbackEngine()
+
+        handler = StandardKeyboardFeedbackHandler(settings: KeyboardFeedbackSettings())
+
+        AudioFeedback.engine = audioEngine
+        HapticFeedback.engine = hapticEngine
+    }
     
-    override func spec() {
-        
-        var handler: StandardKeyboardFeedbackHandler!
-        
-        var audioPlayer: MockSystemAudioPlayer!
-        var hapticPlayer: MockHapticFeedbackPlayer!
-        
-        beforeEach {
-            audioPlayer = MockSystemAudioPlayer()
-            hapticPlayer = MockHapticFeedbackPlayer()
-            
-            handler = StandardKeyboardFeedbackHandler(settings: KeyboardFeedbackSettings())
-            
-            SystemAudio.player = audioPlayer
-            HapticFeedback.player = hapticPlayer
-        }
-        
-        describe("trigger feedback") {
-            
-            it("triggers audio and haptic feedback") {
-                handler.triggerFeedback(for: .press, on: .backspace)
-                expect(audioPlayer.hasCalled(audioPlayer.playRef)).to(beTrue())
-                expect(hapticPlayer.hasCalled(hapticPlayer.playRef)).to(beTrue())
-            }
-        }
-        
-        describe("trigger audio feedback") {
-            
-            it("triggers audio feedback only") {
-                handler.triggerAudioFeedback(for: .press, on: .backspace)
-                expect(audioPlayer.hasCalled(audioPlayer.playRef)).to(beTrue())
-                expect(hapticPlayer.hasCalled(hapticPlayer.playRef)).to(beFalse())
-            }
-        }
-        
-        describe("trigger haptic feedback") {
-            
-            it("triggers haptic feedback only") {
-                handler.triggerHapticFeedback(for: .press, on: .backspace)
-                expect(audioPlayer.hasCalled(audioPlayer.playRef)).to(beFalse())
-                expect(hapticPlayer.hasCalled(hapticPlayer.playRef)).to(beTrue())
-            }
-        }
+    func testTriggerFeedbackTriggersAudioAndHapticFeedback() {
+        handler.triggerFeedback(for: .press, on: .backspace)
+        XCTAssertTrue(audioEngine.hasCalled(\.triggerRef))
+        XCTAssertTrue(hapticEngine.hasCalled(\.triggerRef))
+    }
+
+    func testTriggerAudioFeedbackTriggersAudioFeedbackOnly() {
+        handler.triggerAudioFeedback(for: .press, on: .backspace)
+        XCTAssertTrue(audioEngine.hasCalled(\.triggerRef))
+        XCTAssertFalse(hapticEngine.hasCalled(\.triggerRef))
+    }
+
+    func testTriggerHapticFeedbackTriggersHapticFeedbackOnly() {
+        handler.triggerHapticFeedback(for: .press, on: .backspace)
+        XCTAssertFalse(audioEngine.hasCalled(\.triggerRef))
+        XCTAssertTrue(hapticEngine.hasCalled(\.triggerRef))
     }
 }
-#endif
