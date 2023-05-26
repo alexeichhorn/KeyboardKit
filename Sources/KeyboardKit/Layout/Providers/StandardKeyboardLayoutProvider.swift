@@ -34,12 +34,13 @@ open class StandardKeyboardLayoutProvider: KeyboardLayoutProvider {
      */
     public init(
         inputSetProvider: InputSetProvider,
-        dictationReplacement: KeyboardAction? = nil) {
+        dictationReplacement: KeyboardAction? = nil
+    ) {
         self.inputSetProvider = inputSetProvider
         self.dictationReplacement = dictationReplacement
     }
-    
-    
+
+
     /**
      An optional dictation replacement action.
      */
@@ -56,47 +57,32 @@ open class StandardKeyboardLayoutProvider: KeyboardLayoutProvider {
     }
     
     /**
-     The layout provider that is used when the device is not
-     an iPhone or iPad.
-     
-     For not, this will just return an empty layout, so make
-     sure to replace this when you use the standard provider
-     on other device types than iPhone and iPad.
-     */
-    open lazy var fallbackProvider = StaticKeyboardLayoutProvider(
-        keyboardLayout: KeyboardLayout(itemRows: []))
-    
-    /**
      The layout provider that is used for iPad devices.
      */
     open lazy var iPadProvider = iPadKeyboardLayoutProvider(
         inputSetProvider: inputSetProvider,
         dictationReplacement: dictationReplacement)
-    
+
     /**
      The layout provider that is used for iPhone devices.
      */
     open lazy var iPhoneProvider = iPhoneKeyboardLayoutProvider(
         inputSetProvider: inputSetProvider,
         dictationReplacement: dictationReplacement)
-    
-    
+
+    /**
+     The layout provider that is used for iPhone devices.
+     */
+    open func keyboardLayoutProvider(for context: KeyboardContext) -> KeyboardLayoutProvider {
+        context.deviceType == .pad ? iPadProvider : iPhoneProvider
+    }
+
     /**
      Get a keyboard layout for a certain keyboard `context`.
      */
     open func keyboardLayout(for context: KeyboardContext) -> KeyboardLayout {
-        layoutProvider(for: context).keyboardLayout(for: context)
-    }
-    
-    /**
-     Get a keyboard layout provider for a certain `context`.
-     */
-    open func layoutProvider(for context: KeyboardContext) -> KeyboardLayoutProvider {
-        #if os(iOS) || os(tvOS)
-        context.device.isPad ? iPadProvider : iPhoneProvider
-        #else
-        fallbackProvider
-        #endif
+        keyboardLayoutProvider(for: context)
+            .keyboardLayout(for: context)
     }
     
     /**
@@ -105,5 +91,18 @@ open class StandardKeyboardLayoutProvider: KeyboardLayoutProvider {
      */
     open func register(inputSetProvider: InputSetProvider) {
         self.inputSetProvider = inputSetProvider
+    }
+
+
+
+    // MARK: - Deprecated
+
+    @available(*, deprecated, message: "This is no longer used and will be removed in KeyboardKit 7.")
+    open lazy var fallbackProvider = StaticKeyboardLayoutProvider(
+        keyboardLayout: KeyboardLayout(itemRows: []))
+
+    @available(*, deprecated, renamed: "keyboardLayoutProvider(for:)")
+    open func layoutProvider(for context: KeyboardContext) -> KeyboardLayoutProvider {
+        keyboardLayoutProvider(for: context)
     }
 }

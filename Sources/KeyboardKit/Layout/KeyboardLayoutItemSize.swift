@@ -21,7 +21,10 @@ public struct KeyboardLayoutItemSize: Equatable {
        - width: The declarative width of the item.
        - height: The fixed height of the item.
      */
-    public init(width: KeyboardLayoutItemWidth, height: CGFloat) {
+    public init(
+        width: KeyboardLayoutItemWidth,
+        height: CGFloat
+    ) {
         self.width = width
         self.height = height
     }
@@ -29,10 +32,10 @@ public struct KeyboardLayoutItemSize: Equatable {
     /**
      The declarative width of the item.
      */
-    public let width: KeyboardLayoutItemWidth
+    public var width: KeyboardLayoutItemWidth
     
     /**
      The fixed height of the item.
      */
-    public let height: CGFloat
+    public var height: CGFloat
 }

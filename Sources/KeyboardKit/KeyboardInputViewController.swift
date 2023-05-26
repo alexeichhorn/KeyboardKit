@@ -37,7 +37,11 @@ open class KeyboardInputViewController: UIInputViewController {
         super.viewDidLayoutSubviews()
         keyboardContext.syncAfterLayout(with: self)
     }
-    
+
+    /**
+     This function is called whenever the keyboard should be
+     created or updated.
+     */
     open func viewWillSetupKeyboard() {
         // Override and implement your keyboard setup logic.
     }
@@ -51,14 +55,19 @@ open class KeyboardInputViewController: UIInputViewController {
     // MARK: - Setup
 
     /**
-     Setup KeyboardKit with a SwiftUI `View`.
-     
-     This will remove all subviews, then add the view pinned
-     to the edges of its view, so that the extension resizes
-     to fit its content.
-     
-     This will also inject the input controller's observable
-     objects as `@EnvironmentObject`s into the view hiearchy.
+     Setup KeyboardKit with a SwiftUI view.
+
+     Calling this function will remove all subviews from the
+     view controller and add the provided view in such a way
+     that the extension will resize to fit the provided view.
+     It also injects the input controller observable objects
+     as `@EnvironmentObject` into the view hierarchy, to let
+     any view in the view hieararchy access them easily.
+
+     For now views MUST add an `@EnvironmentObject` property
+     for the `KeyboardContext` to update correctly when this
+     context changes. This should not be needed, but for now
+     it is. Any help to figure out why would be amazing.
      */
     open func setup<Content: View>(with view: Content) {
         self.view.subviews.forEach { $0.removeFromSuperview() }
@@ -80,17 +89,6 @@ open class KeyboardInputViewController: UIInputViewController {
     
     
     // MARK: - Properties
-    
-    /**
-     Get the bundle ID of the currently active app.
-     */
-    public var activeAppBundleId: String? {
-        if Bundle.main.isExtension {
-            return parent?.value(forKey: "_hostBundleID") as? String
-		} else {
-			return Bundle.main.bundleIdentifier
-		}
-    }
     
     /**
      This internal property always returns the original text
@@ -318,10 +316,7 @@ open class KeyboardInputViewController: UIInputViewController {
     open func performAutocomplete() {
         guard let text = autocompleteText else { return resetAutocomplete() }
         autocompleteProvider.autocompleteSuggestions(for: text) { [weak self] result in
-            switch result {
-            case .failure(let error): print(error.localizedDescription)
-            case .success(let result): self?.autocompleteContext.suggestions = result
-            }
+            self?.updateAutocompleteContext(with: result)
         }
     }
     
@@ -341,7 +336,7 @@ open class KeyboardInputViewController: UIInputViewController {
 // MARK: - Private Functions
 
 private extension KeyboardInputViewController {
-    
+
     func refreshCalloutActionContext() {
         actionCalloutContext = ActionCalloutContext(
             actionHandler: keyboardActionHandler,
@@ -358,15 +353,10 @@ private extension KeyboardInputViewController {
             inputSetProvider: inputSetProvider)
     }
     
-    
     /**
      Make sure that the controller view is setup to at least
      have a standard width that isn't non-zero, to avoid bad
-     view layout in SwiftUI. Otherwise, we may run into some
-     problems when the controller's view is not yet sized to
-     anything appropriate. This is most likely to happen for
-     situations where the controller is being created within
-     the context of a host app.
+     view layout in SwiftUI.
      */
     func setupInitialWidth() {
         view.frame.size.width = UIScreen.main.bounds.width
@@ -389,6 +379,22 @@ private extension KeyboardInputViewController {
         let shouldSwitch = keyboardBehavior.shouldSwitchToPreferredKeyboardTypeAfterTextDidChange()
         guard shouldSwitch else { return }
         keyboardContext.keyboardType = context.preferredKeyboardType
+    }
+
+    /**
+     Update the autocomplete context with a certain result.
+
+     This is performed async to avoid that any network-based
+     operations update the context from a background thread.
+     */
+    func updateAutocompleteContext(with result: AutocompleteResult) {
+        DispatchQueue.main.async { [weak self] in
+            guard let context = self?.autocompleteContext else { return }
+            switch result {
+            case .failure(let error): context.lastError = error
+            case .success(let result): context.suggestions = result
+            }
+        }
     }
 }
 #endif

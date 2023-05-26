@@ -10,11 +10,10 @@
 import SwiftUI
 
 /**
- This view wraps a provided view and applies a collection of
- optional gesture actions to it.
+ This view wraps any view and applies a ``GestureButton`` to
+ it, to handle all actions for the provided keyboard action.
  
- This view is internal. You should instead apply it with the
- `keyboardGestures` view modifier, which is public.
+ This view is internal. Apply it with `View+keyboardGestures`.
  */
 struct KeyboardGestures<Content: View>: View {
     
@@ -25,7 +24,8 @@ struct KeyboardGestures<Content: View>: View {
      - Parameters:
        - view: The view to apply the gestures to.
        - action: The keyboard action to trigger.
-       - isPressed: Whether or not the button is pressed.
+       - isInScrollView: Whether or not the gestures are used in a scroll view.
+       - isPressed: An optional binding that can be used to observe the button pressed state.
        - tapAction: The action to trigger when the button is released within its bounds.
        - doubleTapAction: The action to trigger when the button is double tapped.
        - longPressAction: The action to trigger when the button is long pressed.
@@ -37,6 +37,7 @@ struct KeyboardGestures<Content: View>: View {
     init(
         view: Content,
         action: KeyboardAction?,
+        isInScrollView: Bool = false,
         isPressed: Binding<Bool>,
         tapAction: KeyboardGestureAction?,
         doubleTapAction: KeyboardGestureAction?,
@@ -45,9 +46,11 @@ struct KeyboardGestures<Content: View>: View {
         releaseAction: KeyboardGestureAction?,
         repeatAction: KeyboardGestureAction?,
         repeatTimer: RepeatGestureTimer = .shared,
-        dragAction: KeyboardDragGestureAction?) {
+        dragAction: KeyboardDragGestureAction?
+    ) {
         self.view = view
         self.action = action
+        self.isInScrollView = isInScrollView
         self.isPressed = isPressed
         self.tapAction = tapAction
         self.doubleTapAction = doubleTapAction
@@ -61,6 +64,7 @@ struct KeyboardGestures<Content: View>: View {
     
     private let view: Content
     private let action: KeyboardAction?
+    private let isInScrollView: Bool
     private let isPressed: Binding<Bool>
     private let tapAction: KeyboardGestureAction?
     private let doubleTapAction: KeyboardGestureAction?
@@ -70,21 +74,77 @@ struct KeyboardGestures<Content: View>: View {
     private let repeatAction: KeyboardGestureAction?
     private let repeatTimer: RepeatGestureTimer
     private let dragAction: KeyboardDragGestureAction?
-    
-    @State private var isRepeatGestureActive = false {
-        didSet { isRepeatGestureActive ? startRepeatTimer() : stopRepeatTimer() }
+
+    @State
+    private var isPressGestureActive = false {
+        didSet { isPressed.wrappedValue = isPressGestureActive }
     }
-    
-    @State private var shouldApplyTapAction = true
+
+    @State
+    private var shouldApplyReleaseAction = true
     
     var body: some View {
-        view.overlay(GeometryReader { geo in
-            Color.clearInteractable
-                .gesture(dragGesture(for: geo))
-                .optionalGesture(doubleTapGesture)
-                .simultaneousGesture(longPressGesture)
-                .simultaneousGesture(longPressDragGesture(for: geo))
-        })
+        view.overlay(
+            GeometryReader { geo in
+                if shouldApplyNewGestures, #available(iOS 14.0, macOS 11.0, watchOS 8.0, *) {
+                    gestureButton(for: geo)
+                } else {
+                    Color.clearInteractable
+                        .gesture(dragGesture(for: geo))
+                        .optionalGesture(doubleTapGesture)
+                        .simultaneousGesture(longPressGesture)
+                        .simultaneousGesture(longPressDragGesture(for: geo))
+                }
+            }
+        )
+    }
+}
+
+private extension KeyboardGestures {
+
+    var shouldApplyNewGestures: Bool {
+        if action?.isEmojiAction == true { return true }
+        return isNewGestureEngineEnabled
+    }
+}
+
+
+// MARK: - Views
+
+private extension KeyboardGestures {
+
+    @ViewBuilder
+    @available(iOS 14.0, macOS 11.0, watchOS 8.0, *)
+    func gestureButton(for geo: GeometryProxy) -> some View {
+        if isInScrollView {
+            ScrollViewGestureButton(
+                isPressed: isPressed,
+                pressAction: { handlePress(in: geo) },
+                releaseInsideAction: { handleReleaseInside(in: geo, at: $0) },
+                releaseOutsideAction: { handleReleaseOutside(in: geo, at: $0) },
+                longPressDelay: 0.5,
+                longPressAction: { handleLongPress(in: geo) },
+                doubleTapAction: { handleDoubleTap(in: geo) },
+                repeatAction: { handleRepeat(in: geo) },
+                dragAction: { handleDrag(in: geo, value: $0) },
+                endAction: { handleGestureEnded(in: geo) },
+                label: { _ in Color.clearInteractable }
+            )
+        } else {
+            GestureButton(
+                isPressed: isPressed,
+                pressAction: { handlePress(in: geo) },
+                releaseInsideAction: { handleReleaseInside(in: geo, at: $0) },
+                releaseOutsideAction: { handleReleaseOutside(in: geo, at: $0) },
+                longPressDelay: 0.5,
+                longPressAction: { handleLongPress(in: geo) },
+                doubleTapAction: { handleDoubleTap(in: geo) },
+                repeatAction: { handleRepeat(in: geo) },
+                dragAction: { handleDrag(in: geo, value: $0) },
+                endAction: { handleGestureEnded(in: geo) },
+                label: { _ in Color.clearInteractable }
+            )
+        }
     }
 }
 
@@ -92,20 +152,83 @@ struct KeyboardGestures<Content: View>: View {
 // MARK: - Contexts
 
 private extension KeyboardGestures {
-    
-    /**
-     The action callout context to use.
-     */
+
     var actionCalloutContext: ActionCalloutContext? { .shared }
-    
-    /**
-     The input callout context to use.
-     */
+
     var inputCalloutContext: InputCalloutContext? { .shared }
+
+    var featureToggle: FeatureToggle { .shared }
+
+    var isNewGestureEngineEnabled: Bool {
+        featureToggle.isFeatureEnabled(.newButtonGestureEngine)
+    }
 }
 
 
-// MARK: - Gestures
+// MARK: - Actions
+
+private extension KeyboardGestures {
+
+    func handleDoubleTap(in geo: GeometryProxy) {
+        doubleTapAction?(nil)
+    }
+
+    func handleDrag(in geo: GeometryProxy, value: DragGesture.Value) {
+        actionCalloutContext?.updateSelection(with: value)
+        dragAction?(value.startLocation, value.location)
+    }
+
+    func handleGestureEnded(in geo: GeometryProxy) {
+        endActionCallout()
+        inputCalloutContext?.resetWithDelay()
+        actionCalloutContext?.reset()
+        shouldApplyReleaseAction = true
+    }
+
+    func handleLongPress(in geo: GeometryProxy) {
+        shouldApplyReleaseAction = shouldApplyReleaseAction && action != .space
+        tryBeginActionCallout(in: geo)
+        longPressAction?(nil)
+    }
+
+    func handlePress(in geo: GeometryProxy) {
+        pressAction?(nil)
+        inputCalloutContext?.updateInput(for: action, in: geo)
+    }
+
+    func handleReleaseInside(in geo: GeometryProxy, at location: CGPoint?) {
+        updateShouldApplyReleaseAction()
+        guard shouldApplyReleaseAction else { return }
+        let keyboardLocation = location.map { geo.frame(in: .named(InputCalloutContext.coordinateSpace)).origin + $0 }
+        tapAction?(keyboardLocation)
+        releaseAction?(keyboardLocation)
+    }
+
+    func handleReleaseOutside(in geo: GeometryProxy, at location: CGPoint) {}
+
+    func handleRepeat(in geo: GeometryProxy) {
+        repeatAction?(nil)
+    }
+
+    func tryBeginActionCallout(in geo: GeometryProxy) {
+        guard let context = actionCalloutContext else { return }
+        context.updateInputs(for: action, in: geo)
+        guard context.isActive else { return }
+        inputCalloutContext?.reset()
+    }
+
+    func endActionCallout() {
+        actionCalloutContext?.endDragGesture()
+    }
+
+    func updateShouldApplyReleaseAction() {
+        guard let context = actionCalloutContext else { return }
+        shouldApplyReleaseAction = shouldApplyReleaseAction && !context.hasSelectedAction
+    }
+}
+
+
+// MARK: - Legacy Gestures
 
 private extension KeyboardGestures {
     
@@ -124,8 +247,8 @@ private extension KeyboardGestures {
      */
     func dragGesture(for geo: GeometryProxy) -> some Gesture {
         DragGesture(minimumDistance: 0)
-            .onChanged { handlePress(in: geo, at: $0.location) }
-            .onEnded { handleRelease(in: geo, at: $0.location) }
+            .onChanged { tryHandlePress(in: geo, at: $0.location) }
+            .onEnded { handleLegacyRelease(in: geo, at: $0.location) }
     }
     
     /**
@@ -133,20 +256,23 @@ private extension KeyboardGestures {
      */
     var longPressGesture: some Gesture {
         LongPressGesture()
-            .onEnded { _ in handleLongPressGesture() }
+            .onEnded { _ in handleLegacyLongPressGesture() }
     }
     
     /**
      This is a drag gesture that starts after a long press.
+
+     This gesture is used to present and dismiss the callout
+     that presents secondary actions.
      */
     func longPressDragGesture(for geo: GeometryProxy) -> some Gesture {
-        LongPressGesture()
-            .onEnded { _ in beginActionCallout(for: geo) }
+        LongPressGesture(minimumDuration: 0.4, maximumDistance: 50)
+            .onEnded { _ in tryBeginActionCallout(in: geo) }
             .sequenced(before: DragGesture(minimumDistance: 0))
             .onChanged {
                 switch $0 {
                 case .first: break
-                case .second(_, let drag): handleDelayedDrag(drag)
+                case .second(_, let value): handleDelayedDrag(value, in: geo)
                 }
             }
             .onEnded { _ in endActionCallout() }
@@ -154,54 +280,34 @@ private extension KeyboardGestures {
 }
 
 
-// MARK: - Functions
+// MARK: - Legacy Functions
 
 private extension KeyboardGestures {
     
-    func beginActionCallout(for geo: GeometryProxy) {
-        guard let context = actionCalloutContext else { return }
-        context.updateInputs(for: action, in: geo)
-        guard context.isActive else { return }
-        inputCalloutContext?.reset()
+    func handleDelayedDrag(_ value: DragGesture.Value?, in geo: GeometryProxy) {
+        shouldApplyReleaseAction = shouldApplyReleaseAction && action != .space
+        actionCalloutContext?.updateSelection(with: value)
+        guard let value = value else { return }
+        handleDrag(in: geo, value: value)
+        dragAction?(value.startLocation, value.location)
     }
-    
-    func endActionCallout() {
-        guard let context = actionCalloutContext else { return }
-        shouldApplyTapAction = shouldApplyTapAction && !context.hasSelectedAction
-        context.endDragGesture()
-    }
-    
-    func handleDelayedDrag(_ drag: DragGesture.Value?) {
-        shouldApplyTapAction = shouldApplyTapAction && action != .space
-        actionCalloutContext?.updateSelection(with: drag)
-        guard let drag = drag else { return }
-        dragAction?(drag.startLocation, drag.location)
-    }
-    
-    func handleLongPressGesture() {
+
+    func handleLegacyLongPressGesture() {
         longPressAction?(nil)
         startRepeatTimer()
     }
     
-    func handlePress(in geo: GeometryProxy, at location: CGPoint) {
-        if isPressed.wrappedValue { return }
-        isPressed.wrappedValue = true
+    func handleLegacyRelease(in geo: GeometryProxy, at location: CGPoint) {
         let keyboardLocation = geo.frame(in: .named(InputCalloutContext.coordinateSpace)).origin + location
-        pressAction?(keyboardLocation)
-        inputCalloutContext?.updateInput(for: action, in: geo)
-    }
-    
-    func handleRelease(in geo: GeometryProxy, at location: CGPoint) {
-        let keyboardLocation = geo.frame(in: .named(InputCalloutContext.coordinateSpace)).origin + location
-        releaseAction?(keyboardLocation)
-        if geo.contains(location), shouldApplyTapAction {
+        if geo.contains(location), shouldApplyReleaseAction {
+            releaseAction?(keyboardLocation)
             tapAction?(keyboardLocation)
         }
-        shouldApplyTapAction = true
-        isPressed.wrappedValue = false
+        shouldApplyReleaseAction = true
+        isPressGestureActive = false
         inputCalloutContext?.reset()
         stopRepeatTimer()
-    }
+    }        
     
     func startRepeatTimer() {
         guard let action = repeatAction else { return repeatTimer.stop() }
@@ -210,6 +316,14 @@ private extension KeyboardGestures {
     
     func stopRepeatTimer() {
         repeatTimer.stop()
+    }
+
+    func tryHandlePress(in geo: GeometryProxy, at location: CGPoint) {
+        if isPressGestureActive { return }
+        isPressGestureActive = true
+        let keyboardLocation = geo.frame(in: .named(InputCalloutContext.coordinateSpace)).origin + location
+        pressAction?(keyboardLocation)
+        inputCalloutContext?.updateInput(for: action, in: geo)
     }
 }
 

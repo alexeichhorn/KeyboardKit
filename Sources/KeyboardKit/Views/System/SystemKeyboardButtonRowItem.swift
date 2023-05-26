@@ -35,7 +35,8 @@ public struct SystemKeyboardButtonRowItem<Content: View>: View {
         keyboardWidth: CGFloat,
         inputWidth: CGFloat,
         appearance: KeyboardAppearance,
-        actionHandler: KeyboardActionHandler) {
+        actionHandler: KeyboardActionHandler
+    ) {
         self.content = content
         self.item = item
         self.context = context
@@ -53,7 +54,8 @@ public struct SystemKeyboardButtonRowItem<Content: View>: View {
     private let appearance: KeyboardAppearance
     private let actionHandler: KeyboardActionHandler
     
-    @State private var isPressed = false
+    @State
+    private var isPressed = false
     
     public var body: some View {
         content
@@ -65,7 +67,6 @@ public struct SystemKeyboardButtonRowItem<Content: View>: View {
             .background(Color.clearInteractable)
             .keyboardGestures(
                 for: item.action,
-                context: context,
                 actionHandler: actionHandler,
                 isPressed: $isPressed)
             .localeContextMenu(
@@ -106,13 +107,24 @@ public extension View {
      */
     @ViewBuilder
     func rowItemWidth(for item: KeyboardLayoutItem, totalWidth: CGFloat, referenceWidth: CGFloat) -> some View {
+        if let width = rowItemWidthValue(for: item, totalWidth: totalWidth, referenceWidth: referenceWidth), width > 0 {
+            self.frame(width: width)
+        } else {
+            self.frame(maxWidth: .infinity)
+        }
+    }
+}
+
+private extension View {
+
+    func rowItemWidthValue(for item: KeyboardLayoutItem, totalWidth: Double, referenceWidth: Double) -> Double? {
         let insets = item.insets.leading + item.insets.trailing
         switch item.size.width {
-        case .available: self.frame(maxWidth: .infinity)
-        case .input: self.frame(width: referenceWidth - insets)
-        case .inputPercentage(let percent): self.frame(width: percent * referenceWidth - insets)
-        case .percentage(let percent): self.frame(width: percent * totalWidth - insets)
-        case .points(let points): self.frame(width: points - insets)
+        case .available: return nil
+        case .input: return referenceWidth - insets
+        case .inputPercentage(let percent): return percent * referenceWidth - insets
+        case .percentage(let percent): return percent * totalWidth - insets
+        case .points(let points): return points - insets
         }
     }
 }

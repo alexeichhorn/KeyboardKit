@@ -28,11 +28,12 @@ import Foundation
  using the ``KeyboardContext/locales`` property, which makes
  it possible to navigate through the available locales using
  the ``KeyboardContext/selectNextLocale()`` function.
- 
- This website specifies a list of locale identifiers:
- https://gist.github.com/jacobbubu/1836273
  */
-public enum KeyboardLocale: String, CaseIterable, Codable, Identifiable {
+public enum KeyboardLocale: String,
+                            CaseIterable,
+                            Codable,
+                            Identifiable,
+                            LocaleFlagProvider {
     
     case english = "en"
     
@@ -60,11 +61,15 @@ public enum KeyboardLocale: String, CaseIterable, Codable, Identifiable {
     case german_austria = "de_AT"
     case german_switzerland = "de_CH"
     case greek = "el"
+    case hawaiian = "haw"
+    case hebrew = "he_IL"
     case hungarian = "hu"
     case icelandic = "is"
     case irish = "ga_IE"
     case italian = "it"
     case kurdish_sorani = "ckb"
+    case kurdish_sorani_arabic = "ckb_IQ"
+    case kurdish_sorani_pc = "ckb_PC"
     case latvian = "lv"
     case lithuanian = "lt"
     case macedonian = "mk"
@@ -83,6 +88,7 @@ public enum KeyboardLocale: String, CaseIterable, Codable, Identifiable {
     case slovenian = "sl"
     case spanish = "es"
     case swedish = "sv"
+    case swahili = "sw"
     case turkish = "tr"
     case ukrainian = "uk"
 }
@@ -110,14 +116,15 @@ public extension KeyboardLocale {
     var localizedName: String {
         locale.localizedString(forIdentifier: id) ?? ""
     }
-    
+
     /**
      The corresponding flag emoji for the locale.
+
+     Note that this property adjusts some locales, where the
+     flag should not use the standard result.
      */
     var flag: String {
         switch self {
-        case .english: return "🇺🇸"
-            
         case .albanian: return "🇦🇱"
         case .arabic: return "🇦🇪"
         case .belarusian: return "🇧🇾"
@@ -128,6 +135,7 @@ public extension KeyboardLocale {
         case .danish: return "🇩🇰"
         case .dutch: return "🇳🇱"
         case .dutch_belgium: return "🇧🇪"
+        case .english: return "🇺🇸"
         case .english_gb: return "🇬🇧"
         case .english_us: return "🇺🇸"
         case .estonian: return "🇪🇪"
@@ -142,11 +150,15 @@ public extension KeyboardLocale {
         case .german_austria: return "🇦🇹"
         case .german_switzerland: return "🇨🇭"
         case .greek: return "🇬🇷"
+        case .hawaiian: return "🇺🇸"
+        case .hebrew: return "🇮🇱"
         case .hungarian: return "🇭🇺"
         case .icelandic: return "🇮🇸"
         case .irish: return "🇮🇪"
         case .italian: return "🇮🇹"
         case .kurdish_sorani: return "🇹🇯"
+        case .kurdish_sorani_arabic: return "🇹🇯"
+        case .kurdish_sorani_pc: return "🇹🇯"
         case .latvian: return "🇱🇻"
         case .lithuanian: return "🇱🇹"
         case .macedonian: return "🇲🇰"
@@ -161,10 +173,11 @@ public extension KeyboardLocale {
         case .russian: return "🇷🇺"
         case .serbian: return "🇷🇸"
         case .serbian_latin: return "🇷🇸"
-        case .slovak: return "🇸🇰"
         case .slovenian: return "🇸🇮"
+        case .slovak: return "🇸🇰"
         case .spanish: return "🇪🇸"
         case .swedish: return "🇸🇪"
+        case .swahili: return "🇰🇪"
         case .turkish: return "🇹🇷"
         case .ukrainian: return "🇺🇦"
         }

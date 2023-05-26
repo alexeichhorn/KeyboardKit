@@ -1,13 +1,10 @@
-# KeyboardKit
-
 <p align="center">
-    <img src ="Resources/Logo.png" width=600 />
+    <img src ="Resources/Logo.png" width=600 alt="KeyboardKit Logo" title="KeyboardKit" />
 </p>
 
 <p align="center">
     <img src="https://img.shields.io/github/v/release/KeyboardKit/KeyboardKit?color=%2300550&sort=semver" alt="Version" />
-    <img src="https://img.shields.io/cocoapods/p/KeyboardKit.svg?style=flat" alt="Platform" />
-    <img src="https://img.shields.io/badge/Swift-5.5-orange.svg" alt="Swift 5.5" />
+    <img src="https://img.shields.io/badge/Swift-5.6-orange.svg" alt="Swift 5.6" />
     <img src="https://img.shields.io/github/license/KeyboardKit/KeyboardKit" alt="MIT License" />
     <a href="https://twitter.com/getkeyboardkit">
         <img src="https://img.shields.io/badge/contact-@getkeyboardkit-blue.svg?style=flat" alt="Twitter: @getkeyboardkit" />
@@ -18,7 +15,7 @@
 
 ## About KeyboardKit
 
-KeyboardKit helps you build custom keyboard extensions with Swift and SwiftUI. It extends the native keyboard APIs and provides you with a lot more functionality than is otherwise available. 
+KeyboardKit is a Swift library that helps you build custom keyboards with Swift and SwiftUI. It extends the native keyboard APIs and provides you with a lot more functionality than is otherwise available.
 
 The end result can look something like this...or entirely different:
 
@@ -26,29 +23,32 @@ The end result can look something like this...or entirely different:
     <img src ="Resources/Demo.gif" width="300" />
 </p>
 
-If you're new to iOS keyboard extensions, [this great guide][Guide] will help you get started. You can also have a look at the demo apps for inspiration.
+KeyboardKit lets you create keyboards that mimic the iOS stock keyboard in a single line of code. These keyboards can be customized to great extent to change their input keys, keyboard layout, design, behavior etc.
+
+You can also use entirely custom views with the rich features of KeyboardKit, to create completely custom keyboard extensions. Most of the KeyboardKit features can be used on all major Apple platforms as well. 
 
 
 
 ## Supported Platforms
 
-KeyboardKit supports the following platforms:
+KeyboardKit supports `iOS 13`, `macOS 11`, `tvOS 13` and `watchOS 6`.
 
-* iOS 13.0
-* macOS 11.0
-* tvOS 13.0
-* watchOS 6.0
-
-Although KeyboardKit builds on all platform, some features are unavailable on some platforms. 
+Although KeyboardKit builds on all platform, some features are unavailable on some platforms.
 
 
 
 ## Installation
 
-The best way to install KeyboardKit is to use the Swift Package Manager.
+KeyboardKit can be installed with the Swift Package Manager:
 
 ```
 https://github.com/KeyboardKit/KeyboardKit.git
+```
+
+or with CocoaPods:
+
+```
+pod KeyboardKit
 ```
 
 You can add the library to the main app, the keyboard extension and any other targets that need it.
@@ -57,213 +57,89 @@ You can add the library to the main app, the keyboard extension and any other ta
 
 ## Getting started
 
-Once KeyboardKit is added to your project, you can start using it in your application and keyboard extension.
-
-[Read more here][Getting-Started]
+The online documentation has a [getting-started guide][Getting-Started] that will help you get started with the library.
 
 
 
 ## Documentation
 
-The KeyboardKit documentation contains extensive information, code examples etc. and makes it easy to overview the various parts of the library.
+The [online documentation][Documentation] has articles, code examples etc. that let you overview the various parts of the library and understand how they all connect to each other.
 
-You can either [download][Documentation] the documentation or build it directly in Xcode, using `Product/Build Documentation`.
+The online documentation is currently iOS-specific. To generate documentation for other platforms, open the package in Xcode, select a simulator then run `Product/Build Documentation`.
+
+Note that extensions to native types are not included in this documentation. Future versions of this library will refactor the extensions in a way that makes them appear in the documentation.
 
 
 
-## 🇸🇪 Localization
+## 🌐 Localization
 
-KeyboardKit is localized in 50 keyboard-specific locales:
+KeyboardKit is localized in 50+ keyboard-specific locales ([read more][Localization]):
 
 🇺🇸 🇦🇱 🇦🇪 🇧🇾 🇧🇬 🇦🇩 🇭🇷 🇨🇿 🇩🇰 🇳🇱 <br />
-🇧🇪 🇬🇧 🇺🇸 🇪🇪 🇫🇴 🇵🇭 🇫🇮 🇫🇷 🇧🇪 🇨🇭 <br />
-🇬🇪 🇩🇪 🇦🇹 🇨🇭 🇬🇷 🇭🇺 🇮🇸 🇮🇪 🇮🇹 🇹🇯 <br />
-🇱🇻 🇱🇹 🇲🇰 🇲🇹 🇲🇳 🇳🇴 🇮🇷 🇵🇱 🇵🇹 🇧🇷 <br />
-🇷🇴 🇷🇺 🇷🇸 🇷🇸 🇸🇰 🇸🇮 🇪🇸 🇸🇪 🇹🇷 🇺🇦
-
-[Read more here][Localization]
-
-
-
-## Features 
-
-KeyboardKit comes packed with features. Checkout the list below, and have a look at the documentation, demo apps and source code for even more information and examples.
-
-
-### 💥 Actions
-
-KeyboardKit comes with many keyboard-specific actions, like `character` inputs, `emojis`, `backspace`, `space`, `newline`, `image` etc. You can even create your own actions.
-
-[Read more here][Actions]
-
-
-### 🎨 Appearance
-
-KeyboardKit comes with an appearance engine that lets you easily style your keyboards.
-
-[Read more here][Appearance]
-
-
-### 🔊 Audio
-
-KeyboardKit defines system audio types and ways to play them.
-
-[Read more here][Audio-Feedback]
-
-
-### 💡Autocomplete
-
-KeyboardKit can present autocomplete suggestions as users type.
-
-[Read more here][Autocomplete]
-
-
-### 🗯 Callouts
-
-KeyboardKit lets you show input callouts as users type, as well as action callouts with alternate actions for the currently pressed key.
-
-[Read more here][Callouts]
-
-
-### 😊 Emojis
-
-KeyboardKit defines emojis and emoji categories that you can use in your own keyboards.
-
-[Read more here][Emojis]
-
-
-### 🧩 Extensions
-
-KeyboardKit provides a bunch of extensions to native types.
-
-[Read more here][Extensions]
-
-
-### ⌨️ External Keyboards
-
-KeyboardKit lets you detect whether or not an external keyboard is used.
-
-[Read more here][External]
-
-
-### 👋 Feedback
-
-KeyboardKit keyboards can give audio and haptic feedback as users type. 
-
-Read more about [audio feedback][Audio-Feedback] and [haptic feedback][Haptic-Feedback].
-
-
-### 👆 Gestures
-
-KeyboardKit comes with keyboard-specific gestures that you can use in your own keyboards.
-
-[Read more here][Gestures]
-
-
-### 👋 Haptics
-
-KeyboardKit defines haptic feedback types and ways to trigger them.
-
-[Read more here][Haptic-Feedback]
-
-
-### 🔤 Input Sets
-
-KeyboardKit comes with an input set engine that make it easy to create `alphabetic`, `numeric` and `symbolic`  keyboards in different languages.
-
-[Read more here][Input-Sets]
-
-
-### ⌨️ Keyboard Layouts
-
-KeyboardKit comes with a layout engine that makes it easy to create specific keyboard layouts for various devices, orientations and locales.
-
-[Read more here][Keyboard-Layouts]
-
-
-### 💱 Keyboard Types
-
-KeyboardKit comes with many different keyboard types, like `alphabetic`, `numeric`, `symbolic`, `emoji` etc. You can even create your own types.
-
-[Read more here][Keyboard-Types]
-
-
-### 🌐 Locales
-
-KeyboardKit defines keyboard-specific locales and provides localized content for the supported locales.
-
-[Read more here][Localization]
-
-
-### 👁 Previews
-
-KeyboardKit defines a bunch of preview-specific types that simplify previewing keyboard views in SwiftUI.
-
-[Read more here][Previews]
-
-
-### ➡️ Proxy
-
-KeyboardKit defines a bunch of extensions to `UITextDocumentProxy` and ways to route text to other sources.
-
-[Read more here][Proxy]
-
-
-### ⬅️ RTL
-
-KeyboardKit supports RTL (right-to-left) locales, but your extension need to be configured to support it.
-
-[Read more here][RTL]
-
-
-### 🎨 Styles
-
-KeyboardKit defines a bunch of styles that simplify customizing the look of various keyboard components.
-
-[Read more here][Styles]
-
-
-### 🖼 Views
-
-KeyboardKit comes with a bunch of keyboard-specific views, like keyboards, toobars, buttons etc
-
-[Read more here][Views]
+🇧🇪 🇬🇧 🇪🇪 🇫🇴 🇵🇭 🇫🇮 🇫🇷 🇨🇭 🇬🇪 🇩🇪 <br />
+🇦🇹 🇬🇷 🇮🇱 🇭🇺 🇮🇸 🇮🇪 🇮🇹 🇹🇯 🇱🇻 🇱🇹 <br />
+🇲🇰 🇲🇹 🇲🇳 🇳🇴 🇮🇷 🇵🇱 🇵🇹 🇧🇷 🇷🇴 🇷🇺 <br />
+🇷🇸 🇸🇰 🇸🇮 🇪🇸 🇰🇪 🇸🇪 🇹🇷 🇺🇦 🇺🇸 🇧🇪 <br />
+
+
+## ✨ Features
+
+KeyboardKit comes packed features to help you build amazing and powerful keyboards:
+ 
+* 💥 [Actions][Actions] - KeyboardKit comes with keyboard actions like characters, emojis, actions, custom ones etc.
+* 🎨 [Appearances][Appearances] - KeyboardKit comes with an appearance engine that lets you easily style your keyboards.
+* 💡 [Autocomplete][Autocomplete] - KeyboardKit can present autocomplete suggestions as the user types.
+* 🗯 [Callouts][Callouts] - KeyboardKit can show input callouts, as well as long press callouts with secondary actions.
+* 😊 [Emojis][Emojis] - KeyboardKit defines emojis and emoji categories that you can use in your own keyboards.
+* 🧩 [Extensions][Extensions] - KeyboardKit provides a bunch of extensions to native types.
+* ⌨️ [External Keyboards][External] - KeyboardKit lets you detect whether or not an external keyboard is used.
+* 👋 [Feedback][Feedback] - KeyboardKit keyboards can give and haptic feedback feedback as the user types.
+* 👆 [Gestures][Gestures] - KeyboardKit comes with keyboard-specific gestures that you can use in your own keyboards.
+* 🔤 [Input Sets][Input-Sets] - KeyboardKit supports creating `alphabetic`, `numeric` and `symbolic` and custom input sets. 
+* ⌨️ [Keyboard Layouts][Keyboard-Layouts] - KeyboardKit supports creating keyboard layouts for various devices, locales etc.
+* 💱 [Keyboard Types][Keyboard-Types] - KeyboardKit supports keyboard types, like `alphabetic`, `numeric`, `symbolic` etc.
+* 🌐 [Locales][Localization]- KeyboardKit defines keyboard-specific locales with localized content and assets.
+* 👁 [Previews][Previews] - KeyboardKit defines a bunch of tools that simplify previewing keyboard views in SwiftUI.
+* ➡️ [Proxy][Proxy] - KeyboardKit defines a bunch of extensions to `UITextDocumentProxy`.
+* ⬅️ [RTL][RTL] - KeyboardKit supports RTL (right-to-left) locales, such as Arabic, Persian, Kurdish etc.
+* 🎨 [Styles][Styles] - KeyboardKit defines a bunch of styles that simplify customizing the look of various components.
+* 🚏 [Text Routing][Text-Routing] - KeyboardKit lets you route text to other destinations than the main app.
+* 🖼 [Views][Views] - KeyboardKit comes with a bunch of keyboard-specific views, like keyboards, toobars, buttons etc.
 
 
 
 ## KeyboardKit Pro
 
-KeyboardKit Pro is a license-based extensions that unlocks pro features, such as additional locales, autocomplete, convenience views etc. It can save you a lot of time when developing more complex keyboards.
+[KeyboardKit Pro][Pro] extends KeyboardKit with pro features, such as additional locales, autocomplete engines, more extensions, additional views etc. It lets you create fully localized system keyboards with a single line of code. 
 
-KeyboardKit Pro is also a way to support this project, which is otherwise completely free and developed by a single person (with great help from the community). If you appreciate this project, consider going Pro.  
-
-[Read more here][Pro]
+KeyboardKit Pro requires a commercial license. Licenses can be purchased from the [website][Website] or from [Gumroad][Gumroad].
 
 
 
 ## Demo Applications
 
-This repository contains a `Demo` folder with two demo apps that lets you try out KeyboardKit and KeyboardKit Pro:
+This project contains a `Demo` folder with two demo apps that lets you try out KeyboardKit.
 
-* The standard demo has a system keyboard that mimics an English keyboard and a unicode-based keyboard.
-* The pro demo has a system keyboard with support for all keyboard locales and an `RTL` variant as well. 
+`Demo` uses KeyboardKit and lets you type in a light and dark text field. It has three keyboards:
 
-To run the demo apps, open and run the projects, then enable the keyboards under system settings. Full access is required forfeatures like audio and haptic feedback.
+* `English` uses a `SystemKeyboard` to mimic a native English keyboard.
+* `Unicode` uses a `SystemKeyboard` and a custom, unicode-based input set.
+* `Custom` shows you how to easily customize input sets and layouts.
+
+`ProDemo` uses KeyboardKit Pro and supports 50+ locales, autocomplete etc. It has two keyboards:  
+
+* `System LTR` uses a `SystemKeyboard` with all left-to-right locales.
+* `System RTL` uses a `SystemKeyboard` with all right-to-left locales.
+
+Just open and run any of these projects, then enable the keyboards you want to try under System Settings. 
+
+Note that you need to enable full access to try some features, like audio and haptic feedback.
 
 
 
-## Contact
+## Support
 
-Feel free to reach out if you have questions or if you want to contribute in any way:
-
-* E-mail: [info@getkeyboardkit.com][Email]
-* Twitter: [@getkeyboardkit][Twitter]
-* Web site: [getkeyboardkit.com][Website]
-
-
-## Sponsors and Clients
-
-This project is proudly sponsored by the following companies:
+KeyboardKit is trusted and proudly sponsored by the following companies:
 
 <a href="https://www.oribi.se/en">
     <img src="Resources/sponsors/oribi.png" alt="Oribi Icon" title="Oribi" width=120 />
@@ -284,7 +160,17 @@ This project is proudly sponsored by the following companies:
     <img src="Resources/sponsors/milo.png" alt="Milo Creative Icon" title="Milo Creative" width=120 />
 </a>
 
-KeyboardKit is free, but please consider sponsoring the project if you find it useful. You can support KeyboardKit through [GitHub Sponsors][Sponsors], by signing up for a [Pro][Pro] license, paying for support, donations etc.
+KeyboardKit is open-source and completely free, but you can sponsor this project on [GitHub Sponsors][Sponsors], upgrade to [KeyboardKit Pro][Pro] or get in touch for paid support.
+
+
+
+## Contact
+
+Feel free to reach out if you have questions or if you want to contribute in any way:
+
+* E-mail: [info@getkeyboardkit.com][Email]
+* Twitter: [@getkeyboardkit][Twitter]
+* Website: [getkeyboardkit.com][Website]
 
 
 
@@ -299,29 +185,30 @@ KeyboardKit is available under the MIT license. See the [LICENSE][License] file 
 [Website]: https://getkeyboardkit.com
 [Sponsors]: https://github.com/sponsors/danielsaidi
 [Pro]: https://github.com/KeyboardKit/KeyboardKitPro
+[Gumroad]: https://danielsaidi.gumroad.com
 
-[Documentation]: https://github.com/danielsaidi/Documentation/blob/main/Docs/KeyboardKit.doccarchive.zip?raw=true
-[License]: https://github.com/KeyboardKit/KeyboardKit/blob/master/LICENSE
+[Documentation]: https://keyboardkit.github.io/KeyboardKit/documentation/keyboardkit/
+[Getting-Started]: https://keyboardkit.github.io/KeyboardKit/documentation/keyboardkit/getting-started
 
-[Actions]: https://github.com/KeyboardKit/KeyboardKit/blob/master/Readmes/Actions.md
-[Appearance]: https://github.com/KeyboardKit/KeyboardKit/blob/master/Readmes/Appearance.md
-[Audio-Feedback]: https://github.com/KeyboardKit/KeyboardKit/blob/master/Readmes/Audio-Feedback.md
-[Autocomplete]: https://github.com/KeyboardKit/KeyboardKit/blob/master/Readmes/Autocomplete.md
+[Actions]: https://keyboardkit.github.io/KeyboardKit/documentation/keyboardkit/understanding-actions
+[Appearances]: https://keyboardkit.github.io/KeyboardKit/documentation/keyboardkit/understanding-appearances
+[Autocomplete]: https://keyboardkit.github.io/KeyboardKit/documentation/keyboardkit/understanding-autocomplete
+[Emojis]: https://keyboardkit.github.io/KeyboardKit/documentation/keyboardkit/understanding-emojis
+[Feedback]: https://keyboardkit.github.io/KeyboardKit/documentation/keyboardkit/understanding-feedback
+[Layout]: https://keyboardkit.github.io/KeyboardKit/documentation/keyboardkit/understanding-layout
+[Localization]: https://keyboardkit.github.io/KeyboardKit/documentation/keyboardkit/understanding-localization
+[Previews]: https://keyboardkit.github.io/KeyboardKit/documentation/keyboardkit/understanding-previews.md
+[Proxy]: https://keyboardkit.github.io/KeyboardKit/documentation/keyboardkit/understanding-proxy-extensions.md
+[Text-Routing]: https://keyboardkit.github.io/KeyboardKit/documentation/keyboardkit/understanding-text-routing.md
+
 [Callouts]: https://github.com/KeyboardKit/KeyboardKit/blob/master/Readmes/Callouts.md
-[Emojis]: https://github.com/KeyboardKit/KeyboardKit/blob/master/Readmes/Emojis.md
 [Extensions]: https://github.com/KeyboardKit/KeyboardKit/blob/master/Readmes/Extensions.md
 [External]: https://github.com/KeyboardKit/KeyboardKit/blob/master/Readmes/External.md
 [Gestures]: https://github.com/KeyboardKit/KeyboardKit/blob/master/Readmes/Gestures.md
-[Getting-Started]: https://github.com/KeyboardKit/KeyboardKit/blob/master/Readmes/Getting-Started.md
-[Haptic-Feedback]: https://github.com/KeyboardKit/KeyboardKit/blob/master/Readmes/Haptic-Feedback.md
 [Input-Sets]: https://github.com/KeyboardKit/KeyboardKit/blob/master/Readmes/Input-Sets.md
-[Keyboard-Layouts]: https://github.com/KeyboardKit/KeyboardKit/blob/master/Readmes/Keyboard-Layouts.md
 [Keyboard-Types]: https://github.com/KeyboardKit/KeyboardKit/blob/master/Readmes/Keyboard-Types.md
-[Localization]: https://github.com/KeyboardKit/KeyboardKit/blob/master/Readmes/Localization.md
-[Previews]: https://github.com/KeyboardKit/KeyboardKit/blob/master/Readmes/Previews.md
-[Proxy]: https://github.com/KeyboardKit/KeyboardKit/blob/master/Readmes/Proxy.md
 [RTL]: https://github.com/KeyboardKit/KeyboardKit/blob/master/Readmes/RTL.md
 [Styles]: https://github.com/KeyboardKit/KeyboardKit/blob/master/Readmes/Styles.md
 [Views]: https://github.com/KeyboardKit/KeyboardKit/blob/master/Readmes/Views.md
 
-[Guide]: https://shyngys.com/ios-custom-keyboard-guide
+[License]: https://github.com/KeyboardKit/KeyboardKit/blob/master/LICENSE

@@ -6,7 +6,6 @@
 //  Copyright © 2021 Daniel Saidi. All rights reserved.
 //
 
-#if os(iOS) || os(tvOS)
 import Quick
 import Nimble
 import KeyboardKit
@@ -15,37 +14,32 @@ class StandardKeyboardLayoutProviderTests: QuickSpec {
     
     override func spec() {
         
-        var provider: StandardKeyboardLayoutProvider!
         var inputSetProvider: MockInputSetProvider!
         var context: KeyboardContext!
-        var device: MockDevice!
+        var provider: StandardKeyboardLayoutProvider!
         
         beforeEach {
-            device = MockDevice()
-            context = KeyboardContext(
-                controller: MockKeyboardInputViewController(),
-                device: device)
+            context = KeyboardContext()
             inputSetProvider = MockInputSetProvider()
-            inputSetProvider.alphabeticInputSetValue = AlphabeticInputSet(rows: InputSetRows([["a", "b", "c"], ["a", "b", "c"], ["a", "b", "c"]]))
-            inputSetProvider.numericInputSetValue = NumericInputSet(rows: InputSetRows([["1", "2", "3"], ["1", "2", "3"], ["1", "2", "3"]]))
-            inputSetProvider.symbolicInputSetValue = SymbolicInputSet(rows: InputSetRows([[",", ".", "-"], [",", ".", "-"], [",", ".", "-"]]))
+            inputSetProvider.alphabeticInputSetValue = AlphabeticInputSet(rows: [["a", "b", "c"], ["a", "b", "c"], ["a", "b", "c"]].map(InputSetRow.init))
+            inputSetProvider.numericInputSetValue = NumericInputSet(rows: [["1", "2", "3"], ["1", "2", "3"], ["1", "2", "3"]].map(InputSetRow.init))
+            inputSetProvider.symbolicInputSetValue = SymbolicInputSet(rows: [[",", ".", "-"], [",", ".", "-"], [",", ".", "-"]].map(InputSetRow.init))
             provider = StandardKeyboardLayoutProvider(
                 inputSetProvider: inputSetProvider,
                 dictationReplacement: .primary(.go))
         }
         
-        
         describe("keyboard layout provider for context") {
             
             it("is phone provider if context device is phone") {
-                device.userInterfaceIdiomValue = .phone
-                let result = provider.layoutProvider(for: context)
+                context.deviceType = .phone
+                let result = provider.keyboardLayoutProvider(for: context)
                 expect(result).to(be(provider.iPhoneProvider))
             }
             
             it("is pad provider if context device is pad") {
-                device.userInterfaceIdiomValue = .pad
-                let result = provider.layoutProvider(for: context)
+                context.deviceType = .pad
+                let result = provider.keyboardLayoutProvider(for: context)
                 expect(result).to(be(provider.iPadProvider))
             }
         }
@@ -53,7 +47,7 @@ class StandardKeyboardLayoutProviderTests: QuickSpec {
         describe("keyboard layout for context (just testing this one)") {
             
             it("is phone layout if context device is phone") {
-                device.userInterfaceIdiomValue = .phone
+                context.deviceType = .phone
                 let layout = provider.keyboardLayout(for: context)
                 let phoneLayout = provider.iPhoneProvider.keyboardLayout(for: context)
                 let padLayout = provider.iPadProvider.keyboardLayout(for: context)
@@ -62,7 +56,7 @@ class StandardKeyboardLayoutProviderTests: QuickSpec {
             }
             
             it("is pad layout if context device is pad") {
-                device.userInterfaceIdiomValue = .pad
+                context.deviceType = .pad
                 let layout = provider.keyboardLayout(for: context)
                 let phoneLayout = provider.iPhoneProvider.keyboardLayout(for: context)
                 let padLayout = provider.iPadProvider.keyboardLayout(for: context)
@@ -75,6 +69,7 @@ class StandardKeyboardLayoutProviderTests: QuickSpec {
             
             it("changes the provider instance for all providers") {
                 let newProvider = MockInputSetProvider()
+                context.deviceType = .phone
                 provider.register(inputSetProvider: newProvider)
                 expect(provider.inputSetProvider).toNot(be(inputSetProvider))
                 expect(provider.inputSetProvider).to(be(newProvider))
@@ -84,4 +79,3 @@ class StandardKeyboardLayoutProviderTests: QuickSpec {
         }
     }
 }
-#endif

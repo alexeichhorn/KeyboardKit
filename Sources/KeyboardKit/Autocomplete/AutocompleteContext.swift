@@ -13,19 +13,27 @@ import Combine
  of autocomplete suggestions.
  
  `KeyboardKit` will automatically create an instance of this
- class and bind it to the input view controller.
+ class then bind it to the input view controller.
  */
 public class AutocompleteContext: ObservableObject {
     
     public init() {}
-    
+
     /**
      Whether or not suggestions are currently being fetched.
      */
-    @Published public var isLoading = false
+    @Published
+    public var isLoading = false
+
+    /**
+     The last received autocomplete error.
+     */
+    @Published
+    public var lastError: Error?
     
     /**
      The last received autocomplete suggestions.
      */
-    @Published public var suggestions: [AutocompleteSuggestion] = []
+    @Published
+    public var suggestions: [AutocompleteSuggestion] = []
 }

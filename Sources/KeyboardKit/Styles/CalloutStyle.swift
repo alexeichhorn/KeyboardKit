@@ -49,7 +49,8 @@ public struct CalloutStyle: Equatable {
         curveSize: CGSize = CGSize(width: 8, height: 15),
         shadowColor: Color = Color.black.opacity(0.1),
         shadowRadius: CGFloat = 5,
-        textColor: Color = .primary) {
+        textColor: Color = .primary
+    ) {
         self.backgroundColor = backgroundColor
         self.borderColor = borderColor
         self.buttonCornerRadius = buttonCornerRadius
@@ -117,6 +118,8 @@ public extension CalloutStyle {
     
     /**
      This standard style aims to mimic the native iOS style.
+
+     This can be set to change the standard value everywhere.
      */
     static var standard = CalloutStyle()
 }

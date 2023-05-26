@@ -26,7 +26,8 @@ public struct AutocompleteToolbarItemBackgroundStyle {
      */
     public init(
         color: Color = .white.opacity(0.5),
-        cornerRadius: CGFloat = 4) {
+        cornerRadius: CGFloat = 4
+    ) {
         self.color = color
         self.cornerRadius = cornerRadius
     }
@@ -46,6 +47,8 @@ public extension AutocompleteToolbarItemBackgroundStyle {
     
     /**
      This standard style aims to mimic the native iOS style.
+     
+     This can be set to change the standard value everywhere.
      */
     static var standard = AutocompleteToolbarItemBackgroundStyle()
 }

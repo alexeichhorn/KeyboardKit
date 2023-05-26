@@ -6,7 +6,6 @@
 //  Copyright © 2021 Daniel Saidi. All rights reserved.
 //
 
-#if os(iOS) || os(tvOS)
 import Quick
 import Nimble
 import KeyboardKit
@@ -21,12 +20,12 @@ class SystemKeyboardLayoutProviderTests: QuickSpec {
         var layoutConfig: KeyboardLayoutConfiguration!
         
         beforeEach {
-            context = KeyboardContext(controller: MockKeyboardInputViewController())
+            context = KeyboardContext()
             layoutConfig = .standard(for: context)
             inputSetProvider = MockInputSetProvider()
-            inputSetProvider.alphabeticInputSetValue = AlphabeticInputSet(rows: InputSetRows([["a", "b", "c"]]))
-            inputSetProvider.numericInputSetValue = NumericInputSet(rows: InputSetRows([["1", "2", "3"]]))
-            inputSetProvider.symbolicInputSetValue = SymbolicInputSet(rows: InputSetRows([[",", ".", "-"]]))
+            inputSetProvider.alphabeticInputSetValue = AlphabeticInputSet(rows: [["a", "b", "c"]].map(InputSetRow.init))
+            inputSetProvider.numericInputSetValue = NumericInputSet(rows: [["1", "2", "3"]].map(InputSetRow.init))
+            inputSetProvider.symbolicInputSetValue = SymbolicInputSet(rows: [[",", ".", "-"]].map(InputSetRow.init))
             provider = SystemKeyboardLayoutProvider(
                 inputSetProvider: inputSetProvider,
                 dictationReplacement: .primary(.go))
@@ -60,7 +59,7 @@ class SystemKeyboardLayoutProviderTests: QuickSpec {
             
             it("is character actions for the provided inputs") {
                 let chars = [["a", "b", "c"], ["d", "e", "f"]]
-                let inputs = InputSetRows(chars)
+                let inputs = chars.map(InputSetRow.init)
                 let actions = provider.actions(for: inputs, context: context)
                 let expected = KeyboardActionRows(characters: chars)
                 expect(actions).to(equal(expected))
@@ -69,9 +68,10 @@ class SystemKeyboardLayoutProviderTests: QuickSpec {
             it("can resolve uppercased alphabetic input set") {
                 context.keyboardType = .alphabetic(.uppercased)
                 let chars = [["a", "b", "c"], ["d", "e", "f"]]
-                let inputs = InputSetRows(chars)
+                let inputs = chars.map(InputSetRow.init)
                 let actions = provider.actions(for: inputs, context: context)
-                let expected = KeyboardActionRows(characters: chars.uppercased())
+                let expectedChars = [["A", "B", "C"], ["D", "E", "F"]]
+                let expected = KeyboardActionRows(characters: expectedChars)
                 expect(actions).to(equal(expected))
             }
         }
@@ -187,4 +187,3 @@ class SystemKeyboardLayoutProviderTests: QuickSpec {
         }
     }
 }
-#endif

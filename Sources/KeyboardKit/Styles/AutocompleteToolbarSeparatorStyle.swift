@@ -28,7 +28,8 @@ public struct AutocompleteToolbarSeparatorStyle {
     public init(
         color: Color = .secondary.opacity(0.5),
         width: CGFloat = 1,
-        height: CGFloat = 30) {
+        height: CGFloat = 30
+    ) {
         self.color = color
         self.width = width
         self.height = height
@@ -54,6 +55,8 @@ public extension AutocompleteToolbarSeparatorStyle {
     
     /**
      This standard style aims to mimic the native iOS style.
+
+     This can be set to change the standard value everywhere.
      */
     static var standard = AutocompleteToolbarSeparatorStyle()
 }

@@ -121,26 +121,9 @@ public enum KeyboardAction: Codable, Equatable {
 public extension KeyboardAction {
     
     /**
-     This enum can be used together with ``primary(_:)``.
-     
-     Primary buttons are color accented buttons that trigger
-     a submit action in the keyboard, just like ``return``.
-     */
-    enum PrimaryType: String, CaseIterable, Codable, Equatable, Identifiable {
-        
-        case done, go, newLine, ok, search
-        
-        /**
-         The type's unique identifier.
-         */
-        public var id: String { rawValue }
-    }
-    
-    /**
      Whether or not the action is a character action.
-     
-     Note that ``characterMargin(_:)`` is excluded, since it
-     is only meant to be used in layouts.
+
+     This is only true for ``KeyboardAction/character(_:)``.
      */
     var isCharacterAction: Bool {
         switch self {
@@ -148,13 +131,24 @@ public extension KeyboardAction {
         default: return false
         }
     }
+
+    /**
+     Whether or not the action is an emoji action.
+
+     This is only true for ``KeyboardAction/emoji(_:)``.
+     */
+    var isEmojiAction: Bool {
+        switch self {
+        case .emoji: return true
+        default: return false
+        }
+    }
     
     /**
-     Whether or not the action is an input action, which are
-     inserting content into the proxy.
-     
-     An input action button is rendered as a light button in
-     native iOS keyboards.
+     Whether or not the action is an input action.
+
+     An input action inserts content into the text proxy and
+     is by default rendered as a light button.
      */
     var isInputAction: Bool {
         switch self {
@@ -169,10 +163,13 @@ public extension KeyboardAction {
     }
     
     /**
-     Whether or not the action is a ``primary(_:)`` action.
+     Whether or not the action is a primary action.
+
+     This is true for ``KeyboardAction/primary(_:)`` actions.
      
-     A primary action button is a color accented button with
-     the same effect as ``return`` in native iOS keyboards.
+     Tapping a primary action has the same effect as tapping
+     ``KeyboardAction/return``, but it's rendered as a color
+     accented button instead of a dark button.
      */
     var isPrimaryAction: Bool {
         switch self {
@@ -182,10 +179,12 @@ public extension KeyboardAction {
     }
     
     /**
-     Whether or not the action is a ``shift(currentState:)``
-     action.
+     Whether or not the action is a shift aftion.
+
+     This is true for ``KeyboardAction/shift(currentState:)``
+     actions..
      */
-    var isShift: Bool {
+    var isShiftAction: Bool {
         switch self {
         case .shift: return true
         default: return false
@@ -195,9 +194,8 @@ public extension KeyboardAction {
     
     /**
      Whether or not the action is a system action.
-     
-     An system action button is rendered as a dark button in
-     native iOS keyboards.
+
+     A system action is by default rendered as a dark button.
      */
     var isSystemAction: Bool {
         switch self {
@@ -225,9 +223,12 @@ public extension KeyboardAction {
     }
     
     /**
-     Whether or not the action is an uppercase shift.
+     Whether or not the action is an uppercase shift action.
+
+     This is true for ``KeyboardAction/shift(currentState:)``
+     where the state is ``KeyboardCasing/isUppercased``.
      */
-    var isUppercaseShift: Bool {
+    var isUppercasedShiftAction: Bool {
         switch self {
         case .shift(let state): return state.isUppercased
         default: return false

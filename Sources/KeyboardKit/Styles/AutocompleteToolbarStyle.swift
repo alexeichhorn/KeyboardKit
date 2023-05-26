@@ -27,7 +27,8 @@ public struct AutocompleteToolbarStyle {
     public init(
         item: AutocompleteToolbarItemStyle = .standard,
         separator: AutocompleteToolbarSeparatorStyle = .standard,
-        autocompleteBackground: AutocompleteToolbarItemBackgroundStyle = .standard) {
+        autocompleteBackground: AutocompleteToolbarItemBackgroundStyle = .standard
+    ) {
         self.item = item
         self.separator = separator
         self.autocompleteBackground = autocompleteBackground
@@ -53,6 +54,8 @@ public extension AutocompleteToolbarStyle {
     
     /**
      This standard style aims to mimic the native iOS style.
+
+     This can be set to change the standard value everywhere.
      */
     static var standard = AutocompleteToolbarStyle()
 }

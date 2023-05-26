@@ -6,24 +6,19 @@
 //  Copyright © 2021 Daniel Saidi. All rights reserved.
 //
 
-import Quick
-import Nimble
 import KeyboardKit
+import XCTest
 
-class KeyboardAction_InputCalloutTests: QuickSpec {
-    
-    override func spec() {
-        
-        describe("input callout text") {
-            
-            it("is only specified for character action") {
-                let action = KeyboardAction.character("foo")
-                let others = KeyboardAction.testActions.filter { !$0.isCharacterAction }
-                expect(action.inputCalloutText).to(equal("foo"))
-                others.forEach {
-                    expect($0.inputCalloutText).to(beNil())
-                }
-            }
+final class KeyboardAction_InputCalloutTests: XCTestCase {
+
+    func testInputCalloutTextIsOnlySpecifiedForCharacterActions() {
+        let char = KeyboardAction.character("foo")
+        let emoji = KeyboardAction.emoji(Emoji("😀"))
+        let others = KeyboardAction.testActions.filter { !$0.isCharacterAction && !$0.isEmojiAction }
+        XCTAssertEqual(char.inputCalloutText, "foo")
+        XCTAssertEqual(emoji.inputCalloutText, "😀")
+        others.forEach {
+            XCTAssertNil($0.inputCalloutText)
         }
     }
 }

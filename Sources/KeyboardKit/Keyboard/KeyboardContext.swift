@@ -15,14 +15,11 @@ import UIKit
 
 /**
  This class provides keyboard extensions with contextual and
- observable information. It is a central part of KeyboardKit
- and to create adaptive keyboards.
- 
+ observable keyboard state.
+
  KeyboardKit automatically creates an instance of this class
- and adds it to the input view controller. It will also sync
- the context with the input controller whenever needed. This
- means that significant changes are synced to a `@Published`
- property that your extension can observe.
+ and sets ``KeyboardInputViewController/keyboardContext`` to
+ to the instance when a keyboard extension is started.
  */
 public class KeyboardContext: ObservableObject {
     
@@ -30,25 +27,25 @@ public class KeyboardContext: ObservableObject {
     #if os(iOS) || os(tvOS)
     /**
      Create a context instance.
-     
+
      - Parameters:
-       - controller: The controller to which the context should apply.
+       - controller: The controller with which the context should sync, if any.
        - locale: The locale to use, by default `.current`.
-       - device: The device to use, by default `.current`.
+       - device: The device to use, by default ``DeviceType/current``.
        - screen: The screen to use, by default `.main`.
        - keyboardType: The current keyboard tye, by default `.alphabetic(.lowercased)`
      */
     public init(
-        controller: KeyboardInputViewController,
+        controller: KeyboardInputViewController? = nil,
         locale: Locale = .current,
-        device: UIDevice = .current,
         screen: UIScreen = .main,
-        keyboardType: KeyboardType = .alphabetic(.lowercased)) {
+        keyboardType: KeyboardType = .alphabetic(.lowercased)
+    ) {
         self.locale = locale
         self.locales = [locale]
-        self.device = device
         self.screen = screen
         self.keyboardType = keyboardType
+        guard let controller = controller else { return }
         self.sync(with: controller)
     }
     #else
@@ -68,74 +65,79 @@ public class KeyboardContext: ObservableObject {
     }
     #endif
     
-    #if os(iOS) || os(tvOS)
-    public let device: UIDevice
-    #endif
-    
     /**
      This property can be set to `false` to stop the context
      from syncing with the vc. It is experimental and can be
      removed whenever.
      */
     public static var tempIsPreviewMode: Bool = false
-    
+
+
     /**
-     The bundle ID of the currently active app.
+     The device type that is currently used.
+
+     By default, this is ``DeviceType/current``, but you can
+     change it to anything you like.
      */
-    @Published public var activeAppBundleId: String?
-    
-    /**
-     The keyboard type that is currently used.
-     */
-    @Published public var keyboardType: KeyboardType
+    @Published
+    public var deviceType: DeviceType = .current
     
     /**
      Whether or not the input controller has a dictation key.
      */
-    @Published public var hasDictationKey: Bool = false
+    @Published
+    public var hasDictationKey: Bool = false
     
     /**
      Whether or not the extension has been given full access.
      */
-    @Published public var hasFullAccess: Bool = false
+    @Published
+    public var hasFullAccess: Bool = false
+
+    /**
+     The keyboard type that is currently used.
+     */
+    @Published
+    public var keyboardType: KeyboardType
     
     /**
      The locale that is currently being used.
      
-     This uses `Locale` instead of `KeyboardLocale`, since a
-     keyboard may have to support locales that are not built
-     into the library.
+     This uses `Locale` instead of ``KeyboardLocale``, since
+     keyboards can use locales that are not in that enum.
      */
-    @Published public var locale: Locale
+    @Published
+    public var locale: Locale
     
     /**
      The locales that are currently enabled for the keyboard.
-     
-     The `selectNextLocale` function can be called to select
-     the next locale in this list.
-     
-     This uses `Locale` instead of `KeyboardLocale`, since a
-     keyboard may have to support locales that are not built
-     into the library.
+
+     ``selectNextLocale()`` can be called to select the next
+     locale in this list.
      */
-    @Published public var locales: [Locale]
+    @Published
+    public var locales: [Locale]
     
     /**
      Whether or not the keyboard should (must) have a switch
      key for selecting the next keyboard.
      */
-    @Published public var needsInputModeSwitchKey: Bool = false
+    @Published
+    public var needsInputModeSwitchKey = false
     
     /**
      The primary language that is currently being used.
      */
-    @Published public var primaryLanguage: String?
-    
+    @Published
+    public var primaryLanguage: String?
+
+
     #if os(iOS) || os(tvOS)
     /**
      The screen in which the keyboard is presented.
      */
-    @Published public var screen: UIScreen
+    @Published
+    public var screen: UIScreen
     #endif
     
     
@@ -143,7 +145,8 @@ public class KeyboardContext: ObservableObject {
     /**
      The current screen orientation.
      */
-    @Published public var screenOrientation: UIInterfaceOrientation = .portrait
+    @Published
+    public var screenOrientation: UIInterfaceOrientation = .portrait
     #endif
     
     
@@ -151,17 +154,50 @@ public class KeyboardContext: ObservableObject {
     /**
      The text document proxy that is currently active.
      */
-    @Published public var textDocumentProxy: UITextDocumentProxy = PreviewTextDocumentProxy()
+    @Published
+    public var textDocumentProxy: UITextDocumentProxy = PreviewTextDocumentProxy()
     
     /**
      The text input mode of the input controller.
      */
-    @Published public var textInputMode: UITextInputMode?
+    @Published
+    public var textInputMode: UITextInputMode?
     
     /**
      The input controller's current trait collection.
      */
-    @Published public var traitCollection: UITraitCollection = UITraitCollection()
+    @Published
+    public var traitCollection = UITraitCollection()
+    #endif
+
+
+    // MARK: - Deprecated
+
+    #if os(iOS) || os(tvOS)
+    @available(*, deprecated, message: "Use initializer without device instead.")
+    public init(
+        controller: KeyboardInputViewController? = nil,
+        locale: Locale = .current,
+        device: UIDevice = .current,
+        screen: UIScreen = .main,
+        keyboardType: KeyboardType = .alphabetic(.lowercased)
+    ) {
+        self.locale = locale
+        self.locales = [locale]
+        self.device = device
+        self.screen = screen
+        self.keyboardType = keyboardType
+        guard let controller = controller else { return }
+        self.sync(with: controller)
+    }
+    #endif
+
+
+    // MARK: - Deprecated
+
+    #if os(iOS) || os(tvOS)
+    @available(*, deprecated, message: "Use deviceType instead.")
+    public var device: UIDevice = .current
     #endif
 }
 
@@ -203,11 +239,25 @@ public extension KeyboardContext {
         false
         #endif
     }
+
+    /**
+     Whether or not the context has a certain locale.
+     */
+    func hasKeyboardLocale(_ locale: KeyboardLocale) -> Bool {
+        self.locale.identifier == locale.localeIdentifier
+    }
+
+    /**
+     Whether or not the context has a certain keyboard type.
+     */
+    func hasKeyboardType(_ type: KeyboardType) -> Bool {
+        keyboardType == type
+    }
     
     /**
-     Select the next locale in the `locales` list, depending
-     on the current `locale`. If `locale` is not in `locales`
-     or last in the list, the first list locale is selected.
+     Select the next locale in ``locales``, depending on the
+     ``locale``. If ``locale`` is last in ``locales`` or not
+     in the list, the first list locale is selected.
      */
     func selectNextLocale() {
         let fallback = locales.first ?? locale
@@ -215,6 +265,13 @@ public extension KeyboardContext {
         let nextIndex = currentIndex.advanced(by: 1)
         guard locales.count > nextIndex else { return locale = fallback }
         locale = locales[nextIndex]
+    }
+
+    /**
+     Set ``locale`` to the provided keyboard locale's locale.
+     */
+    func setLocale(_ locale: KeyboardLocale) {
+        self.locale = locale.locale
     }
     
     #if os(iOS) || os(tvOS)
@@ -225,7 +282,6 @@ public extension KeyboardContext {
     func sync(with controller: KeyboardInputViewController) {
         if Self.tempIsPreviewMode { return }
         DispatchQueue.main.async {
-            self.activeAppBundleId = controller.activeAppBundleId
             self.hasDictationKey = controller.hasDictationKey
             self.hasFullAccess = controller.hasFullAccess
             self.needsInputModeSwitchKey = controller.needsInputModeSwitchKey

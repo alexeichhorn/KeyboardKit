@@ -29,7 +29,8 @@ public struct AutocompleteToolbarItemStyle {
         titleFont: Font = .body,
         titleColor: Color = .primary,
         subtitleFont: Font = .footnote,
-        subtitleColor: Color = .primary) {
+        subtitleColor: Color = .primary
+    ) {
         self.titleFont = titleFont
         self.titleColor = titleColor
         self.subtitleFont = subtitleFont
@@ -61,6 +62,8 @@ public extension AutocompleteToolbarItemStyle {
     
     /**
      This standard style aims to mimic the native iOS style.
+
+     This can be set to change the standard value everywhere.
      */
     static var standard = AutocompleteToolbarItemStyle()
 }

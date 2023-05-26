@@ -34,7 +34,8 @@ public class KeyboardFeedbackSettings: ObservableObject {
      */
     public init(
         audioConfiguration: AudioFeedbackConfiguration = .standard,
-        hapticConfiguration: HapticFeedbackConfiguration = .standard) {
+        hapticConfiguration: HapticFeedbackConfiguration = .standard
+    ) {
         self.audioConfiguration = audioConfiguration
         self.hapticConfiguration = hapticConfiguration
     }
@@ -120,13 +121,21 @@ public extension KeyboardFeedbackSettings {
      Toggle audio feedback between enabled and disabled.
      */
     func toggleAudioFeedback() {
-        isAudioFeedbackEnabled ? disableAudioFeedback() : enableAudioFeedback()
+        if isAudioFeedbackEnabled {
+            disableAudioFeedback()
+        } else {
+            enableAudioFeedback()
+        }
     }
 
     /**
      Toggle haptic feedback between enabled and disabled.
      */
     func toggleHapticFeedback() {
-        isHapticFeedbackEnabled ? disableHapticFeedback() : enableHapticFeedback()
+        if isHapticFeedbackEnabled {
+            disableHapticFeedback()
+        } else {
+            enableHapticFeedback()
+        }
     }
 }

@@ -33,7 +33,8 @@ public struct SystemKeyboardButton<Content: View>: View {
      */
     public init(
         content: Content,
-        style: KeyboardButtonStyle) {
+        style: KeyboardButtonStyle
+    ) {
         self.content = content
         self.style = style
     }
@@ -61,7 +62,7 @@ struct SystemKeyboardButton_Previews: PreviewProvider {
     }
     
     static var previewImage: some View {
-        Image("photo-forest", bundle: .module)
+        Image("photo-forest", bundle: .keyboardKit)
             .resizable()
             .aspectRatio(contentMode: .fill)
             .edgesIgnoringSafeArea(.all)

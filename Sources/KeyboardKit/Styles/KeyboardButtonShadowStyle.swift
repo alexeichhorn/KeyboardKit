@@ -26,7 +26,8 @@ public struct KeyboardButtonShadowStyle: Equatable {
      */
     public init(
         color: Color = .standardButtonShadow,
-        size: CGFloat = 1) {
+        size: CGFloat = 1
+    ) {
         self.color = color
         self.size = size
     }
@@ -53,10 +54,10 @@ public extension KeyboardButtonShadowStyle {
     
     /**
      This standard style aims to mimic the native iOS style.
+
+     This can be set to change the standard value everywhere.
      */
-    static var standard: KeyboardButtonShadowStyle {
-        KeyboardButtonShadowStyle()
-    }
+    static var standard = KeyboardButtonShadowStyle()
 }
 
 

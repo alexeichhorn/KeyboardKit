@@ -9,22 +9,23 @@
 import KeyboardKit
 
 /**
- This demo-specific input set provider replaces the standard
- English alphabetical input set with a unicode one.
- 
- For some unicode keyboards, numeric and symbolic input sets
- make no sense. If so, you should create a custom layout and
- remove the numeric/symbolic switches.
+ This demo-specific `InputSetProvider` can be used to create
+ a custom, Unicode-based input set.
+
+ Note that for some Unicode keyboards, it makes little sense
+ to have a numeric and a symbolic keyboard. If so, you could
+ create a custom `KeyboardLayoutProvider` that removes these
+ keyboard switches.
  */
-class DemoInputSetProvider: DeviceSpecificInputSetProvider {
+class DemoInputSetProvider: InputSetProvider {
     
     let baseProvider = EnglishInputSetProvider()
     
     var alphabeticInputSet: AlphabeticInputSet {
         AlphabeticInputSet(rows: [
-            row(lowercased: "qẅëṛẗÿüïöṗ", uppercased: "QẄЁṚṪŸÜЇÖṖ"),
-            row(lowercased: "äṡḋḟġḧjḳḷ", uppercased: "ÄṠḊḞĠḦJḲḶ"),
-            row(
+            .init(lowercased: "qẅëṛẗÿüïöṗ", uppercased: "QẄЁṚṪŸÜЇÖṖ"),
+            .init(lowercased: "äṡḋḟġḧjḳḷ", uppercased: "ÄṠḊḞĠḦJḲḶ"),
+            .init(
                 phoneLowercased: "żẍċṿḅṅṁ",
                 phoneUppercased: "ŻẌĊṾḄṄṀ",
                 padLowercased: "żẍċṿḅṅṁ,.",

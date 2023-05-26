@@ -29,7 +29,8 @@ public struct KeyboardLayoutConfiguration: Equatable {
     public init(
         buttonCornerRadius: CGFloat,
         buttonInsets: EdgeInsets,
-        rowHeight: CGFloat) {
+        rowHeight: CGFloat
+    ) {
         self.buttonCornerRadius = buttonCornerRadius
         self.buttonInsets = buttonInsets
         self.rowHeight = rowHeight
@@ -38,17 +39,17 @@ public struct KeyboardLayoutConfiguration: Equatable {
     /**
      The corner radius of a keyboard button in the keyboard.
      */
-    public let buttonCornerRadius: CGFloat
+    public var buttonCornerRadius: CGFloat
     
     /**
      The edge insets of a keyboard button in the keyboard.
      */
-    public let buttonInsets: EdgeInsets
+    public var buttonInsets: EdgeInsets
     
     /**
      The total height incl. insets, of a row in the keyboard.
      */
-    public let rowHeight: CGFloat
+    public var rowHeight: CGFloat
 }
 
 public extension KeyboardLayoutConfiguration {
@@ -56,11 +57,10 @@ public extension KeyboardLayoutConfiguration {
     /**
      The standard config for the provided `context`.
      */
-    static func standard(
-        for context: KeyboardContext) -> KeyboardLayoutConfiguration {
+    static func standard(for context: KeyboardContext) -> KeyboardLayoutConfiguration {
         #if os(iOS)
         standard(
-            forIdiom: context.device.userInterfaceIdiom,
+            forDevice: context.deviceType,
             screenSize: context.screen.bounds.size,
             orientation: context.screenOrientation)
         #else
@@ -73,21 +73,23 @@ public extension KeyboardLayoutConfiguration {
      The standard config for the provided device and screen.
      */
     static func standard(
-        forIdiom idiom: UIUserInterfaceIdiom,
+        forDevice device: DeviceType,
         screenSize size: CGSize,
-        orientation: UIInterfaceOrientation) -> KeyboardLayoutConfiguration {
-        switch idiom {
+        orientation: UIInterfaceOrientation
+    ) -> KeyboardLayoutConfiguration {
+        switch device {
         case .pad: return standardPad(forScreenSize: size, orientation: orientation)
         default: return standardPhone(forScreenSize: size, orientation: orientation)
         }
     }
-    
+
     /**
      The standard pad config for the provided `screen`.
      */
     static func standardPad(
         forScreenSize size: CGSize,
-        orientation: UIInterfaceOrientation) -> KeyboardLayoutConfiguration {
+        orientation: UIInterfaceOrientation
+    ) -> KeyboardLayoutConfiguration {
         let isPortrait = orientation.isPortrait
         if size.isScreenSize(.iPadProLargeScreenPortrait) {
             return isPortrait ? .standardPadLargeProPortrait : .standardPadLargeProLandscape
@@ -102,7 +104,8 @@ public extension KeyboardLayoutConfiguration {
      */
     static func standardPhone(
         forScreenSize size: CGSize,
-        orientation: UIInterfaceOrientation) -> KeyboardLayoutConfiguration {
+        orientation: UIInterfaceOrientation
+    ) -> KeyboardLayoutConfiguration {
         let isPortrait = orientation.isPortrait
         if size.isScreenSize(.iPhoneProMaxScreenPortrait) {
             return isPortrait ? .standardPhoneProMaxPortrait : .standardPhoneProMaxLandscape

@@ -12,25 +12,41 @@ public extension View {
     
     typealias KeyboardGestureAction = (_ location: CGPoint?) -> Void
     typealias KeyboardDragGestureAction = (_ startLocation: CGPoint, _ location: CGPoint) -> Void
-    
+
     /**
      Apply keyboard-specific gestures to the view, using the
      provided `action`, `context` and `actionHandler`.
      
      If you provide an optional `KeyboardContext` the action
      can be provided with even more contextual actions.
+
+     - Parameters:
+       - action: The keyboard action to trigger.
+       - actionHandler: The keyboard action handler to use.
+       - isInScrollView: Whether or not the gestures are used in a scroll view, by default `false`.
+       - isPressed: An optional binding that can be used to observe the button pressed state.
      */
     @ViewBuilder
     func keyboardGestures(
         for action: KeyboardAction,
-        context: KeyboardContext,
         actionHandler: KeyboardActionHandler,
+        isInScrollView: Bool = false,
         isPressed: Binding<Bool> = .constant(false)
     ) -> some View {
         if action == .nextKeyboard {
             self
         } else {
-            withKeyboardGestures(for: action, isPressed: isPressed, actionHandler: actionHandler)
+            self.keyboardGestures(
+                action: action,
+                isInScrollView: isInScrollView,
+                isPressed: isPressed,
+                tapAction: { actionHandler.handle(.tap, on: action, at: $0) },
+                doubleTapAction: { actionHandler.handle(.doubleTap, on: action, at: $0) },
+                longPressAction: { actionHandler.handle(.longPress, on: action, at: $0) },
+                pressAction: { actionHandler.handle(.press, on: action, at: $0) },
+                releaseAction: { actionHandler.handle(.release, on: action, at: $0) },
+                repeatAction: { actionHandler.handle(.repeatPress, on: action, at: $0) },
+                dragAction: { start, current in actionHandler.handleDrag(on: action, from: start, to: current) })
         }
     }
     
@@ -40,7 +56,8 @@ public extension View {
      
      - Parameters:
        - action: The keyboard action to trigger.
-       - isPressed: Whether or not the button is pressed.
+       - isInScrollView: Whether or not the gestures are used in a scroll view, by default `false`.
+       - isPressed: An optional binding that can be used to observe the button pressed state.
        - tapAction: The action to trigger when the button is released within its bounds.
        - doubleTapAction: The action to trigger when the button is double tapped.
        - longPressAction: The action to trigger when the button is long pressed.
@@ -49,8 +66,10 @@ public extension View {
        - repeatAction: The action to trigger when the button is pressed and held.
        - dragAction: The action to trigger when the button is dragged.
      */
+    @ViewBuilder
     func keyboardGestures(
         action: KeyboardAction? = nil,
+        isInScrollView: Bool = false,
         isPressed: Binding<Bool> = .constant(false),
         tapAction: KeyboardGestureAction? = nil,
         doubleTapAction: KeyboardGestureAction? = nil,
@@ -58,11 +77,13 @@ public extension View {
         pressAction: KeyboardGestureAction? = nil,
         releaseAction: KeyboardGestureAction? = nil,
         repeatAction: KeyboardGestureAction? = nil,
-        dragAction: KeyboardDragGestureAction? = nil) -> some View {
+        dragAction: KeyboardDragGestureAction? = nil
+    ) -> some View {
         #if os(iOS) || os(macOS) || os(watchOS)
         KeyboardGestures(
             view: self,
             action: action,
+            isInScrollView: isInScrollView,
             isPressed: isPressed,
             tapAction: tapAction,
             doubleTapAction: doubleTapAction,
@@ -70,32 +91,19 @@ public extension View {
             pressAction: pressAction,
             releaseAction: releaseAction,
             repeatAction: repeatAction,
-            dragAction: dragAction)
+            dragAction: dragAction
+        )
         #else
-        self
+        Button {
+            pressAction?()
+            releaseAction?()
+            tapAction?()
+        } label: {
+            self
+        }
         #endif
     }
 }
-
-extension View {
-    
-    func withKeyboardGestures(
-        for action: KeyboardAction,
-        isPressed: Binding<Bool> = .constant(false),
-        actionHandler: KeyboardActionHandler) -> some View {
-        self.keyboardGestures(
-            action: action,
-            isPressed: isPressed,
-            tapAction: { actionHandler.handle(.tap, on: action, at: $0) },
-            doubleTapAction: { actionHandler.handle(.doubleTap, on: action, at: $0) },
-            longPressAction: { actionHandler.handle(.longPress, on: action, at: $0) },
-            pressAction: { actionHandler.handle(.press, on: action, at: $0) },
-            releaseAction: { actionHandler.handle(.release, on: action, at: $0) },
-            repeatAction: { actionHandler.handle(.repeatPress, on: action, at: $0) },
-            dragAction: { start, current in actionHandler.handleDrag(on: action, from: start, to: current) })
-    }
-}
-
 
 private extension Locale {
     var localizedAndCapitalized: String {

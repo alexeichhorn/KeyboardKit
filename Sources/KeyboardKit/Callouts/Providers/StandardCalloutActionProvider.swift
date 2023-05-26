@@ -27,15 +27,17 @@ open class StandardCalloutActionProvider: CalloutActionProvider {
      */
     public init(
         context: KeyboardContext,
-        providers: [LocalizedCalloutActionProvider] = [standardProvider]) {
+        providers: [LocalizedCalloutActionProvider] = [standardProvider]
+    ) {
         self.context = context
         let dict = Dictionary(uniqueKeysWithValues: providers.map { ($0.localeKey, $0) })
         providerDictionary = LocaleDictionary(dict)
     }
     
     /**
-     Get the standard action provider, which is used when no
-     custom providers are provided.
+     Get the standard callout action provider.
+
+     This can be set to change the standard value everywhere.
      */
     public static var standardProvider: LocalizedCalloutActionProvider {
         guard let provider = try? EnglishCalloutActionProvider() else { fatalError("EnglishCalloutActionProvider could not be created.") }

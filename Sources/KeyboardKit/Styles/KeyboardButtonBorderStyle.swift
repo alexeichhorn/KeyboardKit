@@ -26,7 +26,8 @@ public struct KeyboardButtonBorderStyle: Equatable {
      */
     public init(
         color: Color = .clear,
-        size: CGFloat = 0) {
+        size: CGFloat = 0
+    ) {
         self.color = color
         self.size = size
     }
@@ -51,6 +52,8 @@ public extension KeyboardButtonBorderStyle {
     
     /**
      This standard style aims to mimic the native iOS style.
+
+     This can be set to change the standard value everywhere.
      */
     static var standard = KeyboardButtonBorderStyle()
 }

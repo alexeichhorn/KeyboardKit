@@ -17,9 +17,10 @@ import Foundation
  suggestions based on the provided text.
  
  KeyboardKit doesn't have an autocomplete provider as it has
- for most other services, just an internal disabled one that
- it uses as a placeholder until you inject your own provider
- or use KeyboardKit Pro.
+ for most other services. It will instead create and setup a
+ ``DisabledAutocompleteProvider`` that serves as a temporary
+ placeholder service until you inject your own or register a
+ KeyboardKit Pro license.
  
  KeyboardKit Pro unlocks two autocomplete providers when you
  register a valid license. The `StandardAutocompleteProvider`

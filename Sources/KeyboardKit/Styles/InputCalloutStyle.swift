@@ -39,7 +39,8 @@ public struct InputCalloutStyle {
         callout: CalloutStyle = .standard,
         calloutPadding: EdgeInsets = EdgeInsets(top: 2, leading: 2, bottom: 2, trailing: 2),
         calloutSize: CGSize = CGSize(width: 0, height: 55),
-        font: Font = Font.largeTitle.weight(.light)) {
+        font: Font = Font.largeTitle.weight(.light)
+    ) {
         self.callout = callout
         self.calloutPadding = calloutPadding
         self.calloutSize = calloutSize
@@ -77,6 +78,8 @@ public extension InputCalloutStyle {
     
     /**
      This standard style aims to mimic the native iOS style.
+
+     This can be set to change the standard value everywhere.
      */
     static var standard = InputCalloutStyle()
 }
